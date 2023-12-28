@@ -16,7 +16,7 @@ from models import *
 async def root(request: Request, session: Session, access: AccessLevel) -> Any:
     return {
         "time": ctime(),
-        "source": request.client.host,
+        "source": normalize_address(request.client.host),
         "session": session.model_dump(),
         "access": access,
     }
@@ -34,6 +34,7 @@ async def depends_network_security(context: GlobalContext, request: Request) -> 
     access = calculate_access_level(
         request.client.host, context.config.server.security.access_levels
     )
+
     if access == AccessLevel.FORBIDDEN:
         raise NotAuthorizedException(
             detail="Attempted to access from forbidden source address"

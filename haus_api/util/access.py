@@ -3,12 +3,22 @@ from .enums import AccessLevel
 from models.config import ServerSecurityAccessLevelsConfig
 
 
+def normalize_address(addr: str) -> ipaddress.IPv4Address:
+    _host = ipaddress.ip_address(addr)
+    if isinstance(_host, ipaddress.IPv6Address) and _host.ipv4_mapped:
+        _host = _host.ipv4_mapped
+
+    return _host
+
+
 def in_net_or_address(host: str, net: str) -> bool:
+    _host = normalize_address(host)
+
     if net == "*":
         return True
     if "/" in net:
-        return ipaddress.ip_address(host) in ipaddress.ip_network(net)
-    return host == net
+        return _host in ipaddress.ip_network(net)
+    return _host == ipaddress.ip_address(net)
 
 
 def calculate_access_level(

@@ -14,7 +14,8 @@ export default defineConfig({
             "/api": {
                 target: "https://127.0.0.1:8000",
                 secure: false,
-                changeOrigin: true,
+                changeOrigin: false,
+                xfwd: true,
                 rewrite: (path) => path.replace(/^\/api/, ""),
             },
         },
