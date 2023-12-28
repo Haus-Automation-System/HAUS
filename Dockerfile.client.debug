@@ -1,0 +1,11 @@
+# syntax=docker/dockerfile:1.4
+
+FROM node:alpine
+
+WORKDIR /app
+EXPOSE 5173
+
+COPY ./haus_client/package.json /app
+
+RUN yarn install
+CMD ["yarn", "dev", "--host"]
