@@ -1,5 +1,5 @@
 from .config import Config
 from .base import BaseDocument, ExpirableDocument
-from .users import Session
+from .users import Session, User
 
-DOCUMENT_TYPES = [Session]
+DOCUMENT_TYPES = [Session, User]
