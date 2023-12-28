@@ -3,20 +3,22 @@ from ctypes import Union
 from datetime import datetime
 from time import ctime
 import traceback
-from typing import Any
+from typing import Any, Literal
 from litestar import Litestar, MediaType, Response, get, Request
 from litestar.datastructures import State
 from litestar.di import Provide
+from litestar.exceptions import NotAuthorizedException
 from util import *
 from models import *
 
 
 @get("/")
-async def root(request: Request, session: Session) -> Any:
+async def root(request: Request, session: Session, access: AccessLevel) -> Any:
     return {
         "time": ctime(),
         "source": request.client.host,
         "session": session.model_dump(),
+        "access": access,
     }
 
 
@@ -26,6 +28,18 @@ async def depends_context(state: State) -> GlobalContext:
 
 async def depends_session(request: Request) -> Session:
     return await Session.get(request.cookies.get("auth-token", "no-token"))
+
+
+async def depends_network_security(context: GlobalContext, request: Request) -> int:
+    access = calculate_access_level(
+        request.client.host, context.config.server.security.access_levels
+    )
+    if access == AccessLevel.FORBIDDEN:
+        raise NotAuthorizedException(
+            detail="Attempted to access from forbidden source address"
+        )
+
+    return access.value
 
 
 async def startup_tasks(app: Litestar) -> None:
@@ -49,6 +63,7 @@ app = Litestar(
     dependencies={
         "context": Provide(depends_context),
         "session": Provide(depends_session),
+        "access": Provide(depends_network_security),
     },
     middleware=[SessionMiddleware],
     exception_handlers={500: internal_server_error_handler},
