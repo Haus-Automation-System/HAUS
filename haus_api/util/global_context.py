@@ -1,4 +1,4 @@
-from models import Config
+from models import *
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 
@@ -11,5 +11,5 @@ class GlobalContext:
     async def initialize(self):
         await init_beanie(
             database=self.motor.get_database(name=self.config.server.database.database),
-            document_models=[],
+            document_models=DOCUMENT_TYPES,
         )
