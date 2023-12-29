@@ -26,9 +26,11 @@
     "@types/lodash": "^4.14.202",
     "dayjs": "^1.11.10",
     "embla-carousel-react": "^8.0.0-rc17",
+    "i18next": "^23.7.12",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^14.0.0",
     "react-router-dom": "^6.21.1"
   },
   "devDependencies": {

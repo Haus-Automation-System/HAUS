@@ -6,5 +6,6 @@
         "haus_client/src/**/*.scss",
         "haus_client/node_modules/@mantine/**/*.css",
         "haus_client/node_modules/@mantine/**/*.postcss",
-    ]
+    ],
+    "i18n-ally.localesPaths": "haus_client/src/lang"
 }

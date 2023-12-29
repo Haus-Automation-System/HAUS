@@ -6,3 +6,7 @@
     overflow: hidden;
     background-color: var(--mantine-color-body);
 }
+
+img.dark {
+    filter: invert(1);
+}

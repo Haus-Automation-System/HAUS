@@ -7,5 +7,16 @@
     width: 90%;
     max-width: 384px;
     height: fit-content;
-    background-color: var(--mantine-color-default) !important;
+    
+    .greeter-box {
+        background-color: var(--mantine-color-default) !important;
+
+        &.logo {
+            .app-logo {
+                width: calc(100% - 32px);
+                height: auto;
+                opacity: 0.7;
+            }
+        }
+    }
 }
