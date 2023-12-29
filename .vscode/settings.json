@@ -1,0 +1,10 @@
+{
+    "cssvar.ignore": [
+        "**/data/**"
+    ],
+    "cssvar.files": [
+        "haus_client/src/**/*.scss",
+        "haus_client/node_modules/@mantine/**/*.css",
+        "haus_client/node_modules/@mantine/**/*.postcss",
+    ]
+}

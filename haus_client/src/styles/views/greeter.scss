@@ -1,0 +1,11 @@
+.greeter-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: inline-block;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 384px;
+    height: fit-content;
+    background-color: var(--mantine-color-default) !important;
+}
