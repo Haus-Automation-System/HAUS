@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Literal, Optional, Union
 from .base import BaseDocument, ExpirableDocument
 from hashlib import pbkdf2_hmac
 from os import urandom
@@ -21,6 +21,7 @@ class User(BaseDocument):
     password_hash: str
     password_salt: str
     user_icon: Optional[str] = None
+    scopes: list[Union[Literal["root"], str]] = []
 
     class Settings:
         name = "users"
@@ -30,10 +31,25 @@ class User(BaseDocument):
         salt = urandom(32)
         key = pbkdf2_hmac("sha256", password.encode(), salt, 500000)
         return User(
-            username=username, password_hash=key.hex(), password_salt=salt.hex()
+            username=username,
+            password_hash=key.hex(),
+            password_salt=salt.hex(),
+            scopes=[],
         )
 
     def verify(self, password: str) -> bool:
         salt = bytes.fromhex(self.password_salt)
         key = pbkdf2_hmac("sha256", password.encode(), salt, 500000).hex()
         return key == self.password_hash
+
+    def has_scope(self, scope: str) -> bool:
+        if "root" in self.scopes:
+            return True
+
+        check = scope
+        while len(check) > 0:
+            if check in self.scopes:
+                return True
+            scope = ".".join(scope.split(".")[:-1])
+
+        return False

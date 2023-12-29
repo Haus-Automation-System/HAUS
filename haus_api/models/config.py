@@ -17,9 +17,20 @@ class ServerSecurityAccessLevelsConfig(BaseModel):
     external: list[str]
 
 
+class ServerSecurityUsersDefaultConfig(BaseModel):
+    username: str
+    password: str
+    create_if_not_present: bool
+
+
+class ServerSecurityUsersConfig(BaseModel):
+    default: ServerSecurityUsersDefaultConfig
+
+
 class ServerSecurityConfig(BaseModel):
     sessions: ServerSecuritySessionsConfig
     access_levels: ServerSecurityAccessLevelsConfig
+    users: ServerSecurityUsersConfig
 
 
 class ServerConfig(BaseModel):
