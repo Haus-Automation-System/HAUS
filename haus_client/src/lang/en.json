@@ -1,48 +1,51 @@
 {
-    "views": {
-        "greeter": {
-            "title": "Log In",
-            "fields": {
-                "username": {
-                    "label": "Username"
-                },
-                "password": {
-                    "label": "Password"
-                }
-            },
-            "submit": "Log In",
-            "feedback": {
-                "success": "Logged In!"
-            }
-        }
-    },
-    "common": {
-        "errors": {
-            "requiredField": "This field is required."
+  "views": {
+    "greeter": {
+      "title": "Log In",
+      "fields": {
+        "username": {
+          "label": "Username"
         },
-        "notifications": {
-            "success": {
-                "title": "Success!"
-            },
-            "info": {
-                "title": "Info:"
-            },
-            "error": {
-                "title": "Error:"
-            }
+        "password": {
+          "label": "Password"
         }
-    },
-    "errors": {
-        "server": {
-            "unspecified": "An unknown server error occurred.",
-            "auth": {
-                "login": {
-                    "notFound": "Username or password is incorrect."
-                }
-            },
-            "access": {
-                "loginRequired": "Must be logged in to access this page/function."
-            }
-        }
+      },
+      "submit": "Log In",
+      "feedback": {
+        "success": "Logged In!"
+      }
     }
+  },
+  "common": {
+    "errors": {
+      "requiredField": "This field is required."
+    },
+    "notifications": {
+      "success": {
+        "title": "Success!"
+      },
+      "info": {
+        "title": "Info:"
+      },
+      "error": {
+        "title": "Error:"
+      }
+    },
+    "appName": {
+      "short": "HAUS"
+    }
+  },
+  "errors": {
+    "server": {
+      "unspecified": "An unknown server error occurred.",
+      "auth": {
+        "login": {
+          "notFound": "Username or password is incorrect."
+        }
+      },
+      "access": {
+        "loginRequired": "Must be logged in to access this page/function."
+      }
+    }
+  }
 }

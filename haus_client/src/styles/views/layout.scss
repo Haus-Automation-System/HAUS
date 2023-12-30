@@ -1,0 +1,19 @@
+.app-shell {
+    .app-header {
+        .app-icon {
+            height: 36px;
+            width: auto;
+        }
+    }
+
+    .app-main {
+        position: relative;
+        .app-content {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            height: calc(100vh - 60px);
+            box-sizing: border-box;
+        }
+    }
+}
