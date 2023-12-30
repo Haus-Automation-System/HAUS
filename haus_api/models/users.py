@@ -1,4 +1,6 @@
 from typing import Literal, Optional, Union
+
+from pydantic import BaseModel
 from .base import BaseDocument, ExpirableDocument
 from hashlib import pbkdf2_hmac
 from os import urandom
@@ -13,6 +15,13 @@ class Session(ExpirableDocument):
 
     class Settings:
         name = "sessions"
+
+
+class RedactedUser(BaseModel):
+    username: str
+    display_name: Optional[str]
+    user_icon: Optional[str]
+    scopes: list[str]
 
 
 class User(BaseDocument):
@@ -53,3 +62,12 @@ class User(BaseDocument):
             scope = ".".join(scope.split(".")[:-1])
 
         return False
+
+    @property
+    def redacted(self) -> RedactedUser:
+        return RedactedUser(
+            username=self.username,
+            display_name=self.display_name,
+            user_icon=self.user_icon,
+            scopes=self.scopes,
+        )

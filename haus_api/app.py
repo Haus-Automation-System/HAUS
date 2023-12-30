@@ -10,6 +10,7 @@ from litestar.di import Provide
 from litestar.exceptions import NotAuthorizedException
 from util import *
 from models import *
+from controllers import *
 
 
 @get("/")
@@ -58,7 +59,7 @@ def internal_server_error_handler(request: Request, exc: Exception) -> Response:
 
 
 app = Litestar(
-    route_handlers=[root],
+    route_handlers=[root, UsersController, UnauthenticatedUsersController],
     state=State({"context": None}),
     on_startup=[startup_tasks],
     dependencies={

@@ -1,9 +1,21 @@
 {
-    "views": {
-        "greeter": {
-            "login": {
-                "title": "Log In"
-            }
+  "views": {
+    "greeter": {
+      "title": "Log In",
+      "fields": {
+        "username": {
+          "label": "Username"
+        },
+        "password": {
+          "label": "Password"
         }
+      },
+      "submit": "Log In"
     }
+  },
+  "common": {
+    "errors": {
+      "requiredField": "This field is required."
+    }
+  }
 }
