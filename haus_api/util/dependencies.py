@@ -1,4 +1,4 @@
-from models.users import Session, User
+from models import Session, User
 from litestar.exceptions import *
 from .errors import *
 

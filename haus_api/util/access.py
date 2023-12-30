@@ -1,6 +1,6 @@
 import ipaddress
 from .enums import AccessLevel
-from models.config import ServerSecurityAccessLevelsConfig
+from models import ServerSecurityAccessLevelsConfig
 
 
 def normalize_address(addr: str) -> ipaddress.IPv4Address:
