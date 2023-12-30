@@ -1,1 +1,1 @@
-from .users import UsersController, UnauthenticatedUsersController
+from .users import UsersController, UnauthenticatedUsersController, UsersSelfController

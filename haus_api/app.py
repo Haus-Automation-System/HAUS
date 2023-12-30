@@ -59,7 +59,12 @@ def internal_server_error_handler(request: Request, exc: Exception) -> Response:
 
 
 app = Litestar(
-    route_handlers=[root, UsersController, UnauthenticatedUsersController],
+    route_handlers=[
+        root,
+        UsersController,
+        UnauthenticatedUsersController,
+        UsersSelfController,
+    ],
     state=State({"context": None}),
     on_startup=[startup_tasks],
     dependencies={

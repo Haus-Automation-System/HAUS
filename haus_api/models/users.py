@@ -18,6 +18,7 @@ class Session(ExpirableDocument):
 
 
 class RedactedUser(BaseModel):
+    id: str
     username: str
     display_name: Optional[str]
     user_icon: Optional[str]
@@ -66,6 +67,7 @@ class User(BaseDocument):
     @property
     def redacted(self) -> RedactedUser:
         return RedactedUser(
+            id=self.id,
             username=self.username,
             display_name=self.display_name,
             user_icon=self.user_icon,

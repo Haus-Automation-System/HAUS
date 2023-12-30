@@ -5,6 +5,7 @@ import { AppRouter } from "./routes";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import * as langEn from "./lang/en.json";
+import { ApiProvider } from "./util/api";
 
 i18n.use(initReactI18next) // passes i18n down to react-i18next
     .init({
@@ -27,9 +28,11 @@ i18n.use(initReactI18next) // passes i18n down to react-i18next
 function App() {
     return (
         <MantineProvider defaultColorScheme="dark">
-            <div className="app">
-                <RouterProvider router={AppRouter} />
-            </div>
+            <ApiProvider>
+                <div className="app">
+                    <RouterProvider router={AppRouter} />
+                </div>
+            </ApiProvider>
         </MantineProvider>
     );
 }
