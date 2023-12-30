@@ -4,6 +4,7 @@ import { buildApiMethods } from "./methods";
 import { AuthenticationContext, Session, User } from "../../types/auth";
 
 export { ApiProvider } from "./provider";
+export { isApiError } from "./types";
 
 export function useApiContext(): ApiContextType {
     const apiContext: ApiContextType | null = useContext(ApiContext);

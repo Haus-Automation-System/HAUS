@@ -1,4 +1,12 @@
-import { Button, Group, Paper, Stack, Text, TextInput } from "@mantine/core";
+import {
+    Button,
+    Group,
+    Paper,
+    PasswordInput,
+    Stack,
+    Text,
+    TextInput,
+} from "@mantine/core";
 import { useTranslation } from "react-i18next";
 import AppLogo from "../../assets/haus_logo.png";
 import { useColorScheme } from "@mantine/hooks";
@@ -9,6 +17,11 @@ import {
     IconPassword,
     IconUserFilled,
 } from "@tabler/icons-react";
+import { useApi, useUser } from "../../util/api";
+import { useNotifications } from "../../util/notifications";
+import { isApiError } from "../../util/api";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export function Greeter() {
     const { t } = useTranslation();
@@ -25,6 +38,17 @@ export function Greeter() {
                 value.length > 0 ? null : t("common.errors.requiredField"),
         },
     });
+    const api = useApi();
+    const user = useUser();
+    const { success, error } = useNotifications();
+    const nav = useNavigate();
+
+    useEffect(() => {
+        if (user) {
+            nav("/");
+        }
+    }, [user?.id]);
+
     return (
         <Stack gap="sm" className="greeter-container">
             <Paper className="greeter-box logo" radius="sm" p="sm" shadow="sm">
@@ -35,7 +59,18 @@ export function Greeter() {
             <Paper className="greeter-box form" radius="sm" p="sm" shadow="sm">
                 <form
                     onSubmit={form.onSubmit(({ username, password }) =>
-                        console.log(username, password)
+                        api.users.auth
+                            .login(username, password)
+                            .then((result) => {
+                                if (isApiError(result)) {
+                                    error(result);
+                                } else {
+                                    success(
+                                        t("views.greeter.feedback.success")
+                                    );
+                                    nav("/");
+                                }
+                            })
                     )}
                 >
                     <Stack gap="sm">
@@ -50,7 +85,7 @@ export function Greeter() {
                             label={t("views.greeter.fields.username.label")}
                             {...form.getInputProps("username")}
                         />
-                        <TextInput
+                        <PasswordInput
                             withAsterisk
                             leftSection={<IconPassword size={16} />}
                             label={t("views.greeter.fields.password.label")}
