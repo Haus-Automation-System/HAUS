@@ -16,6 +16,7 @@ services:
       dockerfile: Dockerfile.api.debug
     volumes:
       - ./haus_api:/app/haus_api
+      - ./haus_api/haus_utils:/app/haus_api/haus_utils
 
     ports:
       - 8000:8000
