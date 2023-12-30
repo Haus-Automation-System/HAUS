@@ -1,12 +1,14 @@
 from models import *
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
+from .plugin_loader import PluginLoader
 
 
 class GlobalContext:
     def __init__(self):
         self.config = Config.from_config("config.yaml")
         self.motor = AsyncIOMotorClient(self.config.server.database.uri)
+        self.plugins = PluginLoader(self.config)
 
     async def initialize(self):
         await init_beanie(

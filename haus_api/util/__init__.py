@@ -4,3 +4,4 @@ from .enums import *
 from .access import *
 from .errors import build_error
 from .dependencies import *
+from .plugin_loader import PluginLoader

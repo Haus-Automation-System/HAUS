@@ -22,8 +22,5 @@ WORKDIR /app/haus_api
 CMD [\
     "poetry", "run", "python", "-m", "litestar", "run", "--reload", \
     "--host", "0.0.0.0", "--ssl-certfile=certs/cert.pem", \
-    "--ssl-keyfile=certs/key.pem", "--create-self-signed-cert", \
-    "--reload-dir", "./", \
-    "--reload-dir", "./haus_utils", \
-    "--reload-dir", "./plugins" \
+    "--ssl-keyfile=certs/key.pem", "--create-self-signed-cert" \
     ]
