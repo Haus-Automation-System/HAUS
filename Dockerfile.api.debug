@@ -24,5 +24,6 @@ CMD [\
     "--host", "0.0.0.0", "--ssl-certfile=certs/cert.pem", \
     "--ssl-keyfile=certs/key.pem", "--create-self-signed-cert", \
     "--reload-dir", "./", \
-    "--reload-dir", "./haus_utils" \
+    "--reload-dir", "./haus_utils", \
+    "--reload-dir", "./plugins" \
     ]

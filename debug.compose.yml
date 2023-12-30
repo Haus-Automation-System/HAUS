@@ -17,6 +17,7 @@ services:
     volumes:
       - ./haus_api:/app/haus_api
       - ./haus_api/haus_utils:/app/haus_api/haus_utils
+      - ./plugins:/app/haus_api/plugins
 
     ports:
       - 8000:8000
