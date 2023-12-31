@@ -25,7 +25,7 @@ export function LayoutView() {
     const api = useApi();
 
     useEffect(() => {
-        if (!user) {
+        if (!user && authenticationContext) {
             nav("/logged-out");
         }
     }, [user?.id, authenticationContext?.access]);

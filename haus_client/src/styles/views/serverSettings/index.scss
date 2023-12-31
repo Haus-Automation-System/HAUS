@@ -1,0 +1,20 @@
+.server-settings {
+    height: 100%;
+
+    .server-settings-tabs {
+        .mantine-Tabs-tab {
+            max-width: calc(100% / 3);
+            
+            .mantine-Tabs-tabLabel {
+                max-width: calc(100% - 28px);
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+
+    .server-settings-content {
+        flex-grow: 1;
+        position: relative;
+    }
+}

@@ -17,3 +17,6 @@
   - `manage` - Manage plugins
     - `settings` - Change plugin settings
     - `active` - Set if plugin is active or not
+- `server` - Manage internal server settings
+  - `view` - View settings, but do not change
+  - `manage` - Manage settings

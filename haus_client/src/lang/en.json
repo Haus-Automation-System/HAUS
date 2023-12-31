@@ -21,6 +21,19 @@
           "logout": "Log Out"
         }
       }
+    },
+    "settings": {
+      "tabs": {
+        "server": {
+          "tabTitle": "Server Settings"
+        },
+        "users": {
+          "tabTitle": "User Management"
+        },
+        "plugins": {
+          "tabTitle": "Plugin Management"
+        }
+      }
     }
   },
   "common": {
