@@ -14,6 +14,13 @@
       "feedback": {
         "success": "Logged In!"
       }
+    },
+    "layout": {
+      "nav": {
+        "actions": {
+          "logout": "Log Out"
+        }
+      }
     }
   },
   "common": {

@@ -40,6 +40,11 @@ class UsersSelfController(Controller):
     async def get_self(self, user: User) -> RedactedUser:
         return user.redacted
 
+    @post("/logout")
+    async def logout(self, session: Session) -> None:
+        session.user_id = None
+        await session.save()
+
 
 class UsersController(Controller):
     path = "/users"

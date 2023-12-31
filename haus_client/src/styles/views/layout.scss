@@ -16,4 +16,13 @@
             box-sizing: border-box;
         }
     }
+
+    .app-nav {
+        .nav-stack {
+            height: 100%;
+            .nav-main {
+                flex-grow: 1;
+            }
+        }
+    }
 }

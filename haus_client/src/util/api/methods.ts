@@ -73,6 +73,12 @@ export function buildApiMethods(
                     const result = await request<User>("/users/self");
                     return extractResponse(result);
                 },
+                logout: async (): Promise<void> => {
+                    await request<null>("/users/self/logout", {
+                        method: "POST",
+                    });
+                    await getApiContext();
+                },
             },
         },
     };
