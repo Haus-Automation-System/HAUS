@@ -2,6 +2,7 @@ import { useContext, useMemo } from "react";
 import { ApiContext, ApiContextType } from "./types";
 import { buildApiMethods } from "./methods";
 import { AuthenticationContext, Session, User } from "../../types/auth";
+import { reduce, snakeCase } from "lodash";
 
 export { ApiProvider } from "./provider";
 export { isApiError } from "./types";
@@ -106,4 +107,44 @@ export function useScoped(
             );
         }
     }, [scopes, options?.mode, options?.all, api.user?.id, api.user?.scopes]);
+}
+
+export function useMultiScoped(
+    scopes: { scope: string; mode?: "hasScope" | "withinScope" }[]
+): { [key: string]: boolean } {
+    const api = useApiContext();
+
+    return useMemo(() => {
+        return reduce(
+            scopes,
+            (prev, current) => {
+                if (!api.user) {
+                    return { ...prev, [snakeCase(current.scope)]: false };
+                }
+
+                if (api.user.scopes.includes("root")) {
+                    return { ...prev, [snakeCase(current.scope)]: true };
+                }
+
+                if (current.mode === "withinScope") {
+                    return {
+                        ...prev,
+                        [snakeCase(current.scope)]: withinScope(
+                            api.user,
+                            current.scope
+                        ),
+                    };
+                } else {
+                    return {
+                        ...prev,
+                        [snakeCase(current.scope)]: hasScope(
+                            api.user,
+                            current.scope
+                        ),
+                    };
+                }
+            },
+            {}
+        );
+    }, [api.user?.scopes, scopes]);
 }
