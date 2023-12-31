@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { LayoutView } from "./views/Layout/Layout";
 import { Greeter } from "./views/Greeter/Greeter";
 import { ServerSettings } from "./views/ServerSettings/ServerSettingsLayout";
+import { PluginSettingsPanel } from "./views/ServerSettings/panels/PluginSettingsPanel";
 
 export const AppRouter = createBrowserRouter([
     {
@@ -22,7 +23,7 @@ export const AppRouter = createBrowserRouter([
                     },
                     {
                         path: "plugins",
-                        element: <>plugins</>,
+                        element: <PluginSettingsPanel />,
                     },
                 ],
             },

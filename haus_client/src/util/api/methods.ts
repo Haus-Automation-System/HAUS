@@ -1,4 +1,5 @@
 import { AuthenticationContext, Session, User } from "../../types/auth";
+import { Plugin, RedactedPlugin } from "../../types/plugin";
 import {
     ApiRequestFunction,
     ApiResponseError,
@@ -78,6 +79,38 @@ export function buildApiMethods(
                         method: "POST",
                     });
                     await getApiContext();
+                },
+            },
+        },
+        plugins: {
+            list: {
+                detailed: async (): Promise<Plugin[] | ApiResponseError> => {
+                    const result = await request<Plugin[]>("/plugins/detailed");
+                    return extractResponse(result);
+                },
+                basic: async (): Promise<
+                    RedactedPlugin[] | ApiResponseError
+                > => {
+                    const result = await request<RedactedPlugin[]>("/plugins/");
+                    return extractResponse(result);
+                },
+            },
+            info: {
+                detailed: async (
+                    id: string
+                ): Promise<Plugin | ApiResponseError> => {
+                    const result = await request<Plugin>(
+                        `/plugins/${id}/detailed`
+                    );
+                    return extractResponse(result);
+                },
+                basic: async (
+                    id: string
+                ): Promise<RedactedPlugin | ApiResponseError> => {
+                    const result = await request<RedactedPlugin>(
+                        `/plugins/${id}`
+                    );
+                    return extractResponse(result);
                 },
             },
         },

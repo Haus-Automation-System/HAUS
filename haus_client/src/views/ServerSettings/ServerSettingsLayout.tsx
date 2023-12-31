@@ -36,6 +36,8 @@ export function ServerSettings() {
         if (pluginsScoped) {
             return "plugins";
         }
+
+        return "server";
     }, [usersScoped, pluginsScoped, serverScoped]);
 
     useEffect(() => {
