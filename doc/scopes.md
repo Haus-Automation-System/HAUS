@@ -8,6 +8,9 @@
       - `users` - User administration
         - `read` - View user list, including scopes
           - `profile` - View user profiles (no scopes)
-        - `write` - Allows editing & deleting users
+        - `write` - Allows editing & deleting users (only useful if `read` is also active)
           - `delete` - Allows deletion of users
           - `scope` - Allows editing of user scopes
+      - `plugins` - Plugin Settings panel
+        - `read` - View plugin settings & management UI
+        - `write` - Edit plugin management settings

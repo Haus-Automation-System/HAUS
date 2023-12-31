@@ -1,7 +1,7 @@
 from models import *
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
-from .plugin_loader import PluginLoader
+from .plugin_loader import PluginLoader, MetaPlugin
 
 
 class GlobalContext:
@@ -13,7 +13,7 @@ class GlobalContext:
     async def initialize(self):
         await init_beanie(
             database=self.motor.get_database(name=self.config.server.database.database),
-            document_models=DOCUMENT_TYPES,
+            document_models=[*DOCUMENT_TYPES, MetaPlugin],
         )
 
         # Create default user if specified
@@ -23,3 +23,6 @@ class GlobalContext:
             new_root = User.create(conf.username, conf.password)
             new_root.scopes.append("root")
             await new_root.save()
+
+        # Load & initialize plugins
+        await self.plugins.load_all()

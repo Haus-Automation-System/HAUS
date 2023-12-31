@@ -11,5 +11,9 @@ class PluginsController(Controller):
     dependencies = {"user": Provide(depends_user)}
 
     @get("/")
-    async def get_plugin_info(self, context: GlobalContext) -> list[SerializedPlugin]:
-        return [i.serialized for i in context.plugins.plugins.values()]
+    async def get_plugin_info(self, context: GlobalContext) -> list[MetaPlugin]:
+        return [
+            i
+            for i in await MetaPlugin.all().to_list()
+            if i.id in context.plugins.plugins.keys()
+        ]
