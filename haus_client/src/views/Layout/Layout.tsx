@@ -30,7 +30,9 @@ export function LayoutView() {
         }
     }, [user?.id, authenticationContext?.access]);
 
-    const adminScoped = useScoped(["app.admin"], { mode: "withinScope" });
+    const adminScoped = useScoped(["users", "plugins"], {
+        mode: "withinScope",
+    });
 
     return (
         <AppShell
