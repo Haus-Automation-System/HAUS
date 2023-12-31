@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useApiContext } from "../../util/api";
 import { AppShell, Group, Burger, Skeleton, Text } from "@mantine/core";
 import { useColorScheme, useDisclosure } from "@mantine/hooks";
@@ -45,7 +45,9 @@ export function LayoutView() {
                     ))}
             </AppShell.Navbar>
             <AppShell.Main className="app-main">
-                <div className="app-content"></div>
+                <div className="app-content">
+                    <Outlet />
+                </div>
             </AppShell.Main>
         </AppShell>
     );
