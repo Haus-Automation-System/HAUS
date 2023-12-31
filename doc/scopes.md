@@ -12,7 +12,7 @@
     - `create` - Create new users
     - `edit` - Edit existing users & scopes (allows disabling users)
     - `delete` - Delete existing users
-- `plugins` - Plugin viewing & management root (all users with the `app` scope can see redacted versions of this information)
+- `plugins` - Plugin viewing & management root
   - `view` - View plugin info & settings
   - `manage` - Manage plugins
     - `settings` - Change plugin settings
@@ -20,3 +20,5 @@
 - `server` - Manage internal server settings
   - `view` - View settings, but do not change
   - `manage` - Manage settings
+    - `zones` - Manage zones
+    - `colors` - Manage application color scheme

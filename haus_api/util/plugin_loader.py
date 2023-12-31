@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from traceback import print_exc
 from typing import Optional, Union
 from models import BaseDocument
 from haus_utils import Plugin, Config, PluginConfig, PluginMetadata
@@ -94,8 +95,9 @@ class PluginLoader:
                 stderr=subprocess.PIPE,
             )
         except:
+            self.logger.exception("Dependency error:")
             meta.active = False
-            meta.status = "plugin.dependencies"
+            meta.status = "Failed to install plugin dependencies."
             await meta.save()
             return meta, None
 
@@ -111,18 +113,25 @@ class PluginLoader:
             spec.loader.exec_module(pluginModule)
             pluginEntrypoint: type[Plugin] = getattr(pluginModule, conf.run.entrypoint)
         except:
+            self.logger.exception("Import error:")
             meta.active = False
-            meta.status = "plugin.import"
+            meta.status = "Failed to import plugin entrypoint."
             await meta.save()
             return meta, None
 
         try:
             plug = pluginEntrypoint(conf, settings=meta.settings)
             await plug.initialize()
+            meta.status = None
+            await meta.save()
+            self.logger.info(
+                f"Initialized plugin {meta.id} ({meta.manifest.metadata.display_name})"
+            )
             return meta, plug
         except:
+            self.logger.exception("Initialization error:")
             meta.active = False
-            meta.status = "plugin.init"
+            meta.status = "Failed to initialize plugin."
             await meta.save()
             return meta, None
 

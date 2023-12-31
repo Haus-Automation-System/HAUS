@@ -1,0 +1,18 @@
+.plugin-settings-panel {
+    .plugin-card {
+        position: relative;
+        background-color: var(--mantine-color-default);
+
+        .plugin-status {
+            .status-icon {
+                &.error {
+                    color: var(--mantine-color-red-filled);
+                }
+
+                &.valid {
+                    color: var(--mantine-color-green-filled);
+                }
+            }
+        }
+    }
+}

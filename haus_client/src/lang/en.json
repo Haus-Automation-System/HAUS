@@ -31,7 +31,11 @@
           "tabTitle": "User Management"
         },
         "plugins": {
-          "tabTitle": "Plugin Management"
+          "tabTitle": "Plugin Management",
+          "item": {
+            "status": "Status",
+            "statusValid": "Ready"
+          }
         }
       }
     }

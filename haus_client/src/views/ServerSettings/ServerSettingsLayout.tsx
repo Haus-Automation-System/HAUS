@@ -4,12 +4,13 @@ import { trimEnd } from "lodash";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useMultiScoped, useScoped } from "../../util/api";
+import { useMultiScoped, useScoped, useUser } from "../../util/api";
 
 export function ServerSettings() {
     const navigate = useNavigate();
     const location = useLocation();
     const { t } = useTranslation();
+    const user = useUser();
 
     const scopedAccessSettings = useScoped(["users", "plugins", "server"], {
         mode: "withinScope",
@@ -47,10 +48,10 @@ export function ServerSettings() {
     }, [location.pathname]);
 
     useEffect(() => {
-        if (!scopedAccessSettings) {
+        if (!scopedAccessSettings && user) {
             navigate("/");
         }
-    }, [scopedAccessSettings]);
+    }, [scopedAccessSettings, user?.id, user?.scopes]);
 
     useEffect(() => {
         const panel: string =
@@ -60,7 +61,8 @@ export function ServerSettings() {
                 server: serverScoped,
                 users: usersScoped,
                 plugins: pluginsScoped,
-            }[panel]
+            }[panel] &&
+            user
         ) {
             navigate(`/settings/${firstAvailablePanel}`);
         }
@@ -70,6 +72,8 @@ export function ServerSettings() {
         pluginsScoped,
         location.pathname,
         firstAvailablePanel,
+        user?.id,
+        user?.scopes,
     ]);
 
     return (
