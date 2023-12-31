@@ -23,6 +23,9 @@ class UnauthenticatedUsersController(Controller):
         if not result.verify(data.password):
             raise NotFoundException(**build_error("auth.login.notFound"))
 
+        if not result.has_scope("app"):
+            raise NotFoundException(**build_error("auth.login.notFound"))
+
         session.user_id = result.id
         await session.save()
         return result.redacted
@@ -31,6 +34,7 @@ class UnauthenticatedUsersController(Controller):
 class UsersSelfController(Controller):
     path = "/users/self"
     dependencies = {"user": Provide(depends_user)}
+    guards = [guard_scope("app")]
 
     @get("/")
     async def get_self(self, user: User) -> RedactedUser:
@@ -39,3 +43,4 @@ class UsersSelfController(Controller):
 
 class UsersController(Controller):
     path = "/users"
+    guards = [guard_scope("app.admin.users")]

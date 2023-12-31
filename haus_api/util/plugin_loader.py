@@ -7,12 +7,39 @@ from pydantic import BaseModel
 import importlib.util
 
 
+class SerializedPlugin(BaseModel):
+    name: str
+    display_name: Optional[str] = None
+    icon: Optional[str] = None
+    version: Optional[str] = None
+    active: bool
+    error: Optional[str] = None
+
+
 class WrappedPlugin(BaseModel):
     folder: str
     active: bool
     error: Optional[str] = None
     plugin: Optional[Plugin] = None
     model_config = {"arbitrary_types_allowed": True}
+
+    @property
+    def serialized(self) -> SerializedPlugin:
+        if self.plugin:
+            return SerializedPlugin(
+                name=self.plugin.config.metadata.name,
+                display_name=self.plugin.config.metadata.display_name,
+                icon=self.plugin.config.metadata.icon,
+                version=self.plugin.config.metadata.version,
+                active=self.active,
+                error=self.error,
+            )
+        else:
+            return SerializedPlugin(
+                name=self.folder,
+                active=self.active,
+                error=self.error,
+            )
 
 
 class PluginLoader:
