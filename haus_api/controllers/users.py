@@ -34,7 +34,7 @@ class UnauthenticatedUsersController(Controller):
 class UsersSelfController(Controller):
     path = "/users/self"
     dependencies = {"user": Provide(depends_user)}
-    guards = [guard_scope("app")]
+    guards = [guard_within_scope("app")]
 
     @get("/")
     async def get_self(self, user: User) -> RedactedUser:
@@ -48,4 +48,4 @@ class UsersSelfController(Controller):
 
 class UsersController(Controller):
     path = "/users"
-    guards = [guard_scope("app.admin.users")]
+    guards = [guard_within_scope("users")]

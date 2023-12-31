@@ -2,7 +2,6 @@ import { useContext, useMemo } from "react";
 import { ApiContext, ApiContextType } from "./types";
 import { buildApiMethods } from "./methods";
 import { AuthenticationContext, Session, User } from "../../types/auth";
-import { isArray } from "lodash";
 
 export { ApiProvider } from "./provider";
 export { isApiError } from "./types";
@@ -50,61 +49,37 @@ export function useApi(): ApiContextType["methods"] {
     return useApiContext().methods;
 }
 
-export function hasScope(
-    user: User,
-    scope: string,
-    reverse?: boolean
-): boolean {
+export function hasScope(user: User, scope: string): boolean {
     if (user.scopes.includes("root")) {
         return true;
     }
-    if (reverse) {
-        for (const uscope of user.scopes) {
-            let scopeCheck: string = uscope.slice();
 
-            while (scopeCheck.length > 0) {
-                if (scopeCheck === scope) {
-                    return true;
-                }
-
-                scopeCheck = scopeCheck.split(".").slice(0, -1).join(".");
-            }
-        }
-        return false;
-    } else {
-        let scopeCheck: string = scope.slice();
-
-        while (scopeCheck.length > 0) {
-            if (user.scopes.includes(scopeCheck)) {
-                return true;
-            }
-
-            scopeCheck = scopeCheck.split(".").slice(0, -1).join(".");
+    let check = scope.slice();
+    while (check.length > 0) {
+        if (user.scopes.includes(check)) {
+            return true;
         }
 
-        return false;
+        check = check.split(".").slice(0, -1).join(".");
     }
+
+    return false;
 }
 
-export function hasScopes(
-    user: User,
-    scopes: string[],
-    all?: boolean,
-    reverse?: boolean
-): boolean {
+export function withinScope(user: User, scope: string): boolean {
     if (user.scopes.includes("root")) {
         return true;
     }
-    if (all) {
-        return scopes.every((s) => hasScope(user, s, reverse));
-    } else {
-        return scopes.some((s) => hasScope(user, s, reverse));
-    }
+
+    return user.scopes.some((s) => s.startsWith(scope));
 }
 
 export function useScoped(
-    scope: string | string[],
-    options?: { all?: boolean; reversed?: boolean }
+    scopes: string[],
+    options?: {
+        mode?: "hasScope" | "withinScope";
+        all?: boolean;
+    }
 ): boolean {
     const api = useApiContext();
 
@@ -113,11 +88,22 @@ export function useScoped(
             return false;
         }
 
-        return hasScopes(
-            api.user,
-            isArray(scope) ? scope : [scope],
-            options?.all,
-            options?.reversed
-        );
-    }, [scope, api.user?.scopes, options?.all, options?.reversed]);
+        if (api.user.scopes.includes("root")) {
+            return true;
+        }
+
+        if (options?.all) {
+            return scopes.every((s) =>
+                options?.mode === "withinScope"
+                    ? withinScope(api.user as User, s)
+                    : hasScope(api.user as User, s)
+            );
+        } else {
+            return scopes.some((s) =>
+                options?.mode === "withinScope"
+                    ? withinScope(api.user as User, s)
+                    : hasScope(api.user as User, s)
+            );
+        }
+    }, [scopes, options?.mode, options?.all, api.user?.id, api.user?.scopes]);
 }

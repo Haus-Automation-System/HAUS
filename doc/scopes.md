@@ -4,13 +4,16 @@
 - `app` - Root scope, all users other than root have this scope applied automatically. All logged-in actions require this scope, including logging in itself. Removing it disables an account without deleting it.
     - `user` - Places the account into USER mode. Given to each non-root account by default
     - `kiosk` - Places the account into KIOSK mode.
-    - `admin` - Administration scope.
-      - `users` - User administration
-        - `read` - View user list, including scopes
-          - `profile` - View user profiles (no scopes)
-        - `write` - Allows editing & deleting users (only useful if `read` is also active)
-          - `delete` - Allows deletion of users
-          - `scope` - Allows editing of user scopes
-      - `plugins` - Plugin Settings panel
-        - `read` - View plugin settings & management UI
-        - `write` - Edit plugin management settings
+    - `plugins` - Access to all plugins & plugin features
+      - `<plugin_name>` - Access to specific plugins. Plugin-defined scopes are placed under these nodes.
+- `users` - User viewing & management root.
+  - `view` - View all user details
+  - `manage` - Manage user settings
+    - `create` - Create new users
+    - `edit` - Edit existing users & scopes (allows disabling users)
+    - `delete` - Delete existing users
+- `plugins` - Plugin viewing & management root (all users with the `app` scope can see redacted versions of this information)
+  - `view` - View plugin info & settings
+  - `manage` - Manage plugins
+    - `settings` - Change plugin settings
+    - `active` - Set if plugin is active or not

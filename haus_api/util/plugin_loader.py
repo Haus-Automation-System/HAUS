@@ -2,11 +2,18 @@ import subprocess
 import sys
 from typing import Optional, Union
 from models import BaseDocument
-from haus_utils import Plugin, Config, PluginConfig
+from haus_utils import Plugin, Config, PluginConfig, PluginMetadata
 import os
 from pydantic import BaseModel
 import importlib.util
 from logging import getLogger
+
+
+class RedactedMetaPlugin(BaseModel):
+    id: str
+    active: bool
+    status: Optional[str] = None
+    metadata: PluginMetadata
 
 
 class MetaPlugin(BaseDocument):
@@ -31,6 +38,15 @@ class MetaPlugin(BaseDocument):
             status=status,
             manifest=manifest,
             settings={k: v.default for k, v in manifest.settings.items()},
+        )
+
+    @property
+    def redacted(self) -> RedactedMetaPlugin:
+        return RedactedMetaPlugin(
+            id=self.id,
+            active=self.active,
+            status=self.status,
+            metadata=self.manifest.metadata,
         )
 
 
