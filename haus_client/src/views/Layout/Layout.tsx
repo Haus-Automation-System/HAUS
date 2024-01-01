@@ -30,7 +30,7 @@ export function LayoutView() {
         }
     }, [user?.id, authenticationContext?.access]);
 
-    const adminScoped = useScoped(["users", "plugins"], {
+    const adminScoped = useScoped(["users", "plugins", "server"], {
         mode: "withinScope",
     });
 
@@ -57,7 +57,11 @@ export function LayoutView() {
                     <Divider />
                     <Group gap="xs" className="nav-actions">
                         {adminScoped && (
-                            <ActionIcon variant="subtle" size="xl">
+                            <ActionIcon
+                                variant="subtle"
+                                size="xl"
+                                onClick={() => nav("/settings/server")}
+                            >
                                 <IconServerCog size={28} />
                             </ActionIcon>
                         )}

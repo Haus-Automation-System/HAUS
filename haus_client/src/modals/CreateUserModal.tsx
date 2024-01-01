@@ -21,7 +21,7 @@ export function CreateUserModal() {
         initialValues: {
             username: "",
             password: "",
-            scopes: ["app.user", "plugins"],
+            scopes: ["app.user", "app.plugins"],
         },
         validate: {
             username: (value) =>

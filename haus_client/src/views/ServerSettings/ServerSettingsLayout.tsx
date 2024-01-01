@@ -42,16 +42,19 @@ export function ServerSettings() {
     }, [usersScoped, pluginsScoped, serverScoped]);
 
     useEffect(() => {
-        if (trimEnd(location.pathname, "/").split("/").at(-1) === "settings") {
-            navigate(`/settings/${firstAvailablePanel}`);
-        }
-    }, [location.pathname]);
-
-    useEffect(() => {
         if (!scopedAccessSettings && user) {
             navigate("/");
         }
     }, [scopedAccessSettings, user?.id, user?.scopes]);
+
+    useEffect(() => {
+        if (
+            trimEnd(location.pathname, "/").split("/").at(-1) === "settings" &&
+            scopedAccessSettings
+        ) {
+            navigate(`/settings/${firstAvailablePanel}`);
+        }
+    }, [location.pathname, scopedAccessSettings]);
 
     useEffect(() => {
         const panel: string =
@@ -62,7 +65,8 @@ export function ServerSettings() {
                 users: usersScoped,
                 plugins: pluginsScoped,
             }[panel] &&
-            user
+            user &&
+            scopedAccessSettings
         ) {
             navigate(`/settings/${firstAvailablePanel}`);
         }
@@ -74,6 +78,7 @@ export function ServerSettings() {
         firstAvailablePanel,
         user?.id,
         user?.scopes,
+        scopedAccessSettings,
     ]);
 
     return (

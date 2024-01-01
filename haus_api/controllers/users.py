@@ -29,7 +29,7 @@ class UnauthenticatedUsersController(Controller):
         if not result.verify(data.password):
             raise NotFoundException(**build_error("auth.login.notFound"))
 
-        if not result.has_scope("app"):
+        if not result.within_scope("app"):
             raise NotFoundException(**build_error("auth.login.notFound"))
 
         session.user_id = result.id
