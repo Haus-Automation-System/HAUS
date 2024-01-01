@@ -95,6 +95,17 @@ export function buildApiMethods(
                     const result = await request<User[]>("/users");
                     return extractResponse(result);
                 },
+                create: async (
+                    username: string,
+                    password: string,
+                    scopes: string[]
+                ): Promise<User | ApiResponseError> => {
+                    const result = await request<User>("/users/create", {
+                        method: "POST",
+                        body: { username, password, scopes },
+                    });
+                    return extractResponse(result);
+                },
             },
         },
         plugins: {

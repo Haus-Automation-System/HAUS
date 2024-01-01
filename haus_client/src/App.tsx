@@ -7,6 +7,7 @@ import { initReactI18next } from "react-i18next";
 import * as langEn from "./lang/en.json";
 import { ApiProvider } from "./util/api";
 import { Notifications } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
 
 i18n.use(initReactI18next) // passes i18n down to react-i18next
     .init({
@@ -29,11 +30,13 @@ i18n.use(initReactI18next) // passes i18n down to react-i18next
 function App() {
     return (
         <MantineProvider defaultColorScheme="dark">
-            <Notifications />
             <ApiProvider>
-                <div className="app">
-                    <RouterProvider router={AppRouter} />
-                </div>
+                <Notifications />
+                <ModalsProvider>
+                    <div className="app">
+                        <RouterProvider router={AppRouter} />
+                    </div>
+                </ModalsProvider>
             </ApiProvider>
         </MantineProvider>
     );

@@ -3,6 +3,7 @@ import {
     hasScope,
     isApiError,
     useApi,
+    useEvent,
     useMultiScoped,
     useScoped,
 } from "../../../util/api";
@@ -20,6 +21,7 @@ import {
 import { IconUser, IconUserPlus, IconUserShield } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "@mantine/hooks";
+import { useModals } from "../../../modals";
 
 function UserCard({
     user,
@@ -113,6 +115,8 @@ export function UsersSettingsPanel() {
     const api = useApi();
     const [users, setUsers] = useState<User[]>([]);
 
+    const { createUser } = useModals();
+
     const loadUsers = useCallback(
         () =>
             api.users.admin
@@ -126,6 +130,8 @@ export function UsersSettingsPanel() {
     useEffect(() => {
         loadUsers();
     }, []);
+
+    useEvent("users", () => loadUsers());
 
     return (
         <SimpleGrid
@@ -147,6 +153,7 @@ export function UsersSettingsPanel() {
                     radius="sm"
                     className="user-card add-user"
                     withBorder
+                    onClick={() => createUser()}
                 >
                     <Group
                         gap="lg"

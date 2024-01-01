@@ -18,5 +18,6 @@ module.exports = {
         "react-hooks/exhaustive-deps": "off",
         "no-empty": "off",
         "no-constant-condition": "off",
+        "react-refresh/only-export-components": "off",
     },
 };
