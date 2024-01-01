@@ -3,6 +3,7 @@ import { LayoutView } from "./views/Layout/Layout";
 import { Greeter } from "./views/Greeter/Greeter";
 import { ServerSettings } from "./views/ServerSettings/ServerSettingsLayout";
 import { PluginSettingsPanel } from "./views/ServerSettings/panels/PluginSettingsPanel";
+import { UsersSettingsPanel } from "./views/ServerSettings/panels/UserSettingsPanel";
 
 export const AppRouter = createBrowserRouter([
     {
@@ -19,7 +20,7 @@ export const AppRouter = createBrowserRouter([
                     },
                     {
                         path: "users",
-                        element: <>users</>,
+                        element: <UsersSettingsPanel />,
                     },
                     {
                         path: "plugins",

@@ -81,6 +81,12 @@ export function buildApiMethods(
                     await getApiContext();
                 },
             },
+            admin: {
+                list: async (): Promise<User[] | ApiResponseError> => {
+                    const result = await request<User[]>("/users");
+                    return extractResponse(result);
+                },
+            },
         },
         plugins: {
             list: {

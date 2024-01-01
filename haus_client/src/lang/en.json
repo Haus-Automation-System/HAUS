@@ -28,7 +28,10 @@
           "tabTitle": "Server Settings"
         },
         "users": {
-          "tabTitle": "User Management"
+          "tabTitle": "User Management",
+          "item": {
+            "isRoot": "Root User"
+          }
         },
         "plugins": {
           "tabTitle": "Plugin Management",

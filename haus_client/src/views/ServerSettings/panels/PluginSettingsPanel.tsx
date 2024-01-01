@@ -246,7 +246,7 @@ function PluginCard(props: {
 }
 
 export function PluginSettingsPanel() {
-    const canManage = useScoped(["plugins.manage"]);
+    const canManage = useScoped(["plugins.manage"], { mode: "withinScope" });
     const { pluginsManageSettings, pluginsManageActive } = useMultiScoped([
         {
             scope: "plugins.manage.settings",

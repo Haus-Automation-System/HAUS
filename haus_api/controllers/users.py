@@ -49,3 +49,7 @@ class UsersSelfController(Controller):
 class UsersController(Controller):
     path = "/users"
     guards = [guard_within_scope("users")]
+
+    @get("/")
+    async def list_users(self) -> list[RedactedUser]:
+        return [i.redacted for i in await User.all().to_list()]
