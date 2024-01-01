@@ -51,3 +51,32 @@ class PluginsController(Controller):
             raise NotFoundException(**build_error("plugin.notFound"))
 
         return result
+
+    @post("/{name:str}/settings", guards=[guard_has_scope("plugins.manage.settings")])
+    async def update_plugin_settings(
+        self, name: str, context: GlobalContext, data: dict[str, Any]
+    ) -> MetaPlugin:
+        plugin = await MetaPlugin.get(name)
+        if not plugin:
+            raise NotFoundException(**build_error("plugin.notFound"))
+
+        plugin.settings = data
+        await plugin.save()
+        meta, _ = await context.plugins.load_plugin(plugin.manifest, plugin.folder)
+        await context.post_event(
+            "plugins", data={"target": meta.id, "method": "settings"}
+        )
+        return meta
+
+    @post("/{name:str}/active", guards=[guard_has_scope("plugins.manage.active")])
+    async def update_plugin_active(
+        self, name: str, context: GlobalContext, data: dict[Literal["active"], bool]
+    ) -> MetaPlugin:
+        plugin = await MetaPlugin.get(name)
+        if not plugin:
+            raise NotFoundException(**build_error("plugin.notFound"))
+
+        plugin.active = data["active"]
+        await plugin.save()
+        await context.post_event("plugins", data={"target": name, "method": "active"})
+        return plugin

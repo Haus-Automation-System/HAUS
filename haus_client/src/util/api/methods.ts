@@ -113,6 +113,26 @@ export function buildApiMethods(
                     return extractResponse(result);
                 },
             },
+            updateSettings: async (
+                id: string,
+                settings: { [key: string]: any }
+            ): Promise<Plugin | ApiResponseError> => {
+                const result = await request<Plugin>(
+                    `/plugins/${id}/settings`,
+                    { method: "POST", body: settings }
+                );
+                return extractResponse(result);
+            },
+            setActive: async (
+                id: string,
+                active: boolean
+            ): Promise<Plugin | ApiResponseError> => {
+                const result = await request<Plugin>(`/plugins/${id}/active`, {
+                    method: "POST",
+                    body: { active },
+                });
+                return extractResponse(result);
+            },
         },
     };
 }

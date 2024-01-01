@@ -62,4 +62,10 @@ export type Plugin = {
         settings: { [key: string]: PluginField };
     };
     settings: { [key: string]: number | string | boolean | null };
+    folder: string;
+};
+
+export type PluginEvent = {
+    method: "settings" | "active";
+    target: string;
 };

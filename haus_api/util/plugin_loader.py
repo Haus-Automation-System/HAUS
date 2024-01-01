@@ -22,6 +22,7 @@ class MetaPlugin(BaseDocument):
     status: Optional[str] = None
     manifest: PluginConfig
     settings: dict[str, Union[str, int, float, bool]] = {}
+    folder: str
 
     class Settings:
         name = "plugins"
@@ -31,6 +32,7 @@ class MetaPlugin(BaseDocument):
         self,
         active: bool,
         manifest: PluginConfig,
+        folder: str,
         status: Optional[str] = None,
     ) -> "MetaPlugin":
         return MetaPlugin(
@@ -39,6 +41,7 @@ class MetaPlugin(BaseDocument):
             status=status,
             manifest=manifest,
             settings={k: v.default for k, v in manifest.settings.items()},
+            folder=folder,
         )
 
     @property
@@ -62,7 +65,7 @@ class PluginLoader:
     ) -> tuple[MetaPlugin, Union[Plugin, None]]:
         meta = await MetaPlugin.get(conf.metadata.name)
         if not meta:
-            meta = MetaPlugin.create(True, conf)
+            meta = MetaPlugin.create(True, conf, folder)
         invalid = []
 
         for k, v in meta.settings.items():

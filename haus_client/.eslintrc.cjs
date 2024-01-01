@@ -17,5 +17,6 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "off",
         "react-hooks/exhaustive-deps": "off",
         "no-empty": "off",
+        "no-constant-condition": "off",
     },
 };

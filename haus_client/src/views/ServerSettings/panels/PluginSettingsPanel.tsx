@@ -14,11 +14,12 @@ import {
 import {
     isApiError,
     useApi,
+    useEvent,
     useMultiScoped,
     useScoped,
 } from "../../../util/api";
 import { useCallback, useEffect, useState } from "react";
-import { Plugin } from "../../../types/plugin";
+import { Plugin, PluginEvent } from "../../../types/plugin";
 import { NamedIcon } from "../../../util/NamedIcon";
 import {
     IconCircleCheckFilled,
@@ -38,6 +39,8 @@ function PluginCard(props: {
     const [active, setActive] = useState(props.plugin.active);
     const { t } = useTranslation();
     const settingsForm = useForm({ initialValues: props.plugin.settings });
+    const api = useApi();
+    const [reloading, setReloading] = useState<boolean>(false);
 
     return (
         <Paper p="md" radius="sm" shadow="sm" className="plugin-card">
@@ -67,9 +70,13 @@ function PluginCard(props: {
                             Boolean(props.plugin.status)
                         }
                         checked={active}
-                        onChange={(event) =>
-                            setActive(event.currentTarget.checked)
-                        }
+                        onChange={(event) => {
+                            setActive(event.currentTarget.checked);
+                            api.plugins.setActive(
+                                props.plugin.id,
+                                event.currentTarget.checked
+                            );
+                        }}
                         size="lg"
                     />
                 </Group>
@@ -105,9 +112,12 @@ function PluginCard(props: {
                     disabled={!props.canManageSettings}
                 >
                     <form
-                        onSubmit={settingsForm.onSubmit((values) =>
-                            console.log(values)
-                        )}
+                        onSubmit={settingsForm.onSubmit((values) => {
+                            setReloading(true);
+                            api.plugins
+                                .updateSettings(props.plugin.id, values)
+                                .then(() => setReloading(false));
+                        })}
                     >
                         <SimpleGrid
                             spacing="sm"
@@ -221,6 +231,7 @@ function PluginCard(props: {
                             <Button
                                 leftSection={<IconDeviceFloppy />}
                                 type="submit"
+                                loading={reloading}
                             >
                                 {t(
                                     "views.settings.tabs.plugins.item.settings.apply"
@@ -261,6 +272,12 @@ export function PluginSettingsPanel() {
     useEffect(() => {
         loadPlugins();
     }, []);
+
+    useEvent<PluginEvent>("plugins", ({ data }) => {
+        if (data.method === "active" || data.method || "settings") {
+            loadPlugins();
+        }
+    });
 
     return (
         <Stack gap="sm" className="plugin-settings-panel">
