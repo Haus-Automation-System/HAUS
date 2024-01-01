@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react";
-import { ApiContext, ApiContextType } from "./types";
+import { useCallback, useContext, useEffect, useMemo } from "react";
+import { ApiContext, ApiContextType, ApiEvent } from "./types";
 import { buildApiMethods } from "./methods";
 import { AuthenticationContext, Session, User } from "../../types/auth";
 import { camelCase, reduce } from "lodash";
@@ -147,4 +147,32 @@ export function useMultiScoped(
             {}
         );
     }, [api.user?.scopes, scopes]);
+}
+
+export function useEvent<T>(
+    event: string,
+    handler: (event: ApiEvent<T>) => void
+) {
+    const { socket } = useApiContext();
+
+    const socketAvailable = useMemo(() => socket !== null, [socket]);
+
+    const handleEvent = useCallback(
+        (ev: MessageEvent) => {
+            try {
+                const evData: ApiEvent<T> = JSON.parse(ev.data);
+                if (evData.code === event) {
+                    handler(evData);
+                }
+            } catch {}
+        },
+        [event, handler]
+    );
+
+    useEffect(() => {
+        if (socketAvailable && socket) {
+            socket.addEventListener("message", handleEvent);
+            return () => socket.removeEventListener("message", handleEvent);
+        }
+    }, [socketAvailable]);
 }

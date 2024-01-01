@@ -18,6 +18,14 @@ export default defineConfig({
                 xfwd: true,
                 rewrite: (path) => path.replace(/^\/api/, ""),
             },
+            "/api/events": {
+                ws: true,
+                target: "wss://127.0.0.1:8000",
+                secure: false,
+                changeOrigin: false,
+                xfwd: true,
+                rewrite: (path) => path.replace(/^\/api/, ""),
+            },
         },
     },
 });

@@ -60,6 +60,13 @@ export type ApiContextType = {
     authenticationContext: AuthenticationContext | null;
     request: ApiRequestFunction;
     methods: ReturnType<typeof buildApiMethods>;
+    socket: WebSocket | null;
 };
 
 export const ApiContext = createContext<ApiContextType>(null as any);
+
+export type ApiEvent<T = any> = {
+    id: string;
+    code: string;
+    data: T;
+};

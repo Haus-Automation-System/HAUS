@@ -11,6 +11,8 @@ from litestar.exceptions import NotAuthorizedException
 from util import *
 from models import *
 from controllers import *
+from litestar.channels import ChannelsPlugin
+from litestar.channels.backends.memory import MemoryChannelsBackend
 
 
 @get("/")
@@ -45,7 +47,7 @@ async def depends_network_security(context: GlobalContext, request: Request) -> 
 
 
 async def startup_tasks(app: Litestar) -> None:
-    app.state.context = GlobalContext()
+    app.state.context = GlobalContext(app.plugins.get(ChannelsPlugin))
     await app.state.context.initialize()
 
 
@@ -75,4 +77,13 @@ app = Litestar(
     },
     middleware=[SessionMiddleware],
     exception_handlers={500: internal_server_error_handler},
+    plugins=[
+        ChannelsPlugin(
+            backend=MemoryChannelsBackend(history=20),
+            arbitrary_channels_allowed=True,
+            create_ws_route_handlers=True,
+            ws_handler_base_path="/events",
+            ws_handler_send_history=10,
+        )
+    ],
 )
