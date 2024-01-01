@@ -1,5 +1,27 @@
 .users-settings-grid {
     .user-card {
         background-color: var(--mantine-color-default);
+        transition: background-color 0.1s;
+        cursor: pointer;
+        box-sizing: border-box;
+        height: 88px;
+
+        &:hover {
+            background-color: var(--mantine-color-default-hover);
+        }
+
+        &.add-user {
+            border-style: dashed;
+            background-color: var(--mantine-color-body);
+            user-select: none;
+
+            .add-user-text {
+                opacity: 0.6;
+            }
+
+            &:hover {
+                background-color: var(--mantine-color-default);
+            }
+        }
     }
 }

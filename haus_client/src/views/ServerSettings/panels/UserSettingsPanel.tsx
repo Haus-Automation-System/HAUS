@@ -17,7 +17,7 @@ import {
     ThemeIcon,
     Tooltip,
 } from "@mantine/core";
-import { IconUser, IconUserShield } from "@tabler/icons-react";
+import { IconUser, IconUserPlus, IconUserShield } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "@mantine/hooks";
 
@@ -74,7 +74,17 @@ function UserCard({
                             </ThemeIcon>
                         </Tooltip>
                     ) : (
-                        <></>
+                        <Tooltip
+                            label={t("views.settings.tabs.users.item.isNormal")}
+                            withArrow
+                            color={colorScheme === "dark" ? "dark" : undefined}
+                        >
+                            <ThemeIcon variant="light" size="xl" radius="xl">
+                                <IconUser
+                                    style={{ width: "70%", height: "70%" }}
+                                />
+                            </ThemeIcon>
+                        </Tooltip>
                     )}
                 </Group>
             </Stack>
@@ -84,6 +94,7 @@ function UserCard({
 
 export function UsersSettingsPanel() {
     const canManage = useScoped(["users.manage"], { mode: "withinScope" });
+    const { t } = useTranslation();
     const {
         usersManageCreate: canCreate,
         usersManageEdit: canEdit,
@@ -130,6 +141,27 @@ export function UsersSettingsPanel() {
                     key={v.id}
                 />
             ))}
+            {canCreate && (
+                <Paper
+                    p="md"
+                    radius="sm"
+                    className="user-card add-user"
+                    withBorder
+                >
+                    <Group
+                        gap="lg"
+                        align="center"
+                        justify="center"
+                        h="100%"
+                        className="add-user-text"
+                    >
+                        <IconUserPlus size={28} />
+                        <Text size="xl">
+                            {t("views.settings.tabs.users.add.button")}
+                        </Text>
+                    </Group>
+                </Paper>
+            )}
         </SimpleGrid>
     );
 }

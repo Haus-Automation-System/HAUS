@@ -1,5 +1,6 @@
 import { AuthenticationContext, Session, User } from "../../types/auth";
 import { Plugin, RedactedPlugin } from "../../types/plugin";
+import { ApplicationScopes } from "../../types/scope";
 import {
     ApiRequestFunction,
     ApiResponseError,
@@ -52,6 +53,14 @@ export function buildApiMethods(
 
     return {
         getApiContext,
+        scopes: async (): Promise<ApplicationScopes> => {
+            const result = await request<ApplicationScopes>("/scopes");
+            if (result.success) {
+                return result.data;
+            } else {
+                return {};
+            }
+        },
         users: {
             auth: {
                 login: async (

@@ -12,6 +12,7 @@ class GlobalContext:
         self.motor = AsyncIOMotorClient(self.config.server.database.uri)
         self.plugins = PluginLoader(self.config)
         self.channels = channels
+        self.scopes = APPLICATION_SCOPES.model_copy(deep=True)
 
     async def initialize(self):
         await init_beanie(

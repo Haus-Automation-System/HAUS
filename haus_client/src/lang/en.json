@@ -30,7 +30,11 @@
         "users": {
           "tabTitle": "User Management",
           "item": {
-            "isRoot": "Root User"
+            "isRoot": "Root User",
+            "isNormal": "User"
+          },
+          "add": {
+            "button": "Add User"
           }
         },
         "plugins": {

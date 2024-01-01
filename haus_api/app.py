@@ -25,6 +25,11 @@ async def root(request: Request, session: Session, access: AccessLevel) -> Any:
     }
 
 
+@get("/scopes")
+async def get_scope_info(context: GlobalContext) -> dict:
+    return context.scopes.serialize()
+
+
 async def depends_context(state: State) -> GlobalContext:
     return state.context
 
@@ -63,6 +68,7 @@ def internal_server_error_handler(request: Request, exc: Exception) -> Response:
 app = Litestar(
     route_handlers=[
         root,
+        get_scope_info,
         UsersController,
         UnauthenticatedUsersController,
         UsersSelfController,
