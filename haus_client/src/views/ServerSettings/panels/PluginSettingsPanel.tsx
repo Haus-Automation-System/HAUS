@@ -104,7 +104,11 @@ function PluginCard(props: {
                     className="plugin-settings"
                     disabled={!props.canManageSettings}
                 >
-                    <form>
+                    <form
+                        onSubmit={settingsForm.onSubmit((values) =>
+                            console.log(values)
+                        )}
+                    >
                         <SimpleGrid
                             spacing="sm"
                             verticalSpacing="sm"
