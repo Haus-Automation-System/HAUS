@@ -1,4 +1,16 @@
-import { Fieldset, Group, Paper, Stack, Switch, Text } from "@mantine/core";
+import {
+    Button,
+    Fieldset,
+    Group,
+    NumberInput,
+    Paper,
+    SimpleGrid,
+    Space,
+    Stack,
+    Switch,
+    Text,
+    TextInput,
+} from "@mantine/core";
 import {
     isApiError,
     useApi,
@@ -11,9 +23,11 @@ import { NamedIcon } from "../../../util/NamedIcon";
 import {
     IconCircleCheckFilled,
     IconCircleXFilled,
+    IconDeviceFloppy,
     IconPuzzle,
 } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
+import { useForm } from "@mantine/form";
 
 function PluginCard(props: {
     plugin: Plugin;
@@ -23,6 +37,7 @@ function PluginCard(props: {
 }) {
     const [active, setActive] = useState(props.plugin.active);
     const { t } = useTranslation();
+    const settingsForm = useForm({ initialValues: props.plugin.settings });
 
     return (
         <Paper p="md" radius="sm" shadow="sm" className="plugin-card">
@@ -76,11 +91,139 @@ function PluginCard(props: {
                                 size={32}
                             />
                         )}
-                        {t(
-                            props.plugin.status ??
-                                "views.settings.tabs.plugins.item.statusValid"
-                        )}
+                        {props.plugin.status ??
+                            t("views.settings.tabs.plugins.item.statusValid")}
                     </Group>
+                </Fieldset>
+                <Fieldset
+                    p="sm"
+                    radius="sm"
+                    legend={t(
+                        "views.settings.tabs.plugins.item.settings.title"
+                    )}
+                    className="plugin-settings"
+                    disabled={!props.canManageSettings}
+                >
+                    <form>
+                        <SimpleGrid
+                            spacing="sm"
+                            verticalSpacing="sm"
+                            cols={{ base: 1, md: 2 }}
+                        >
+                            {Object.entries(props.plugin.manifest.settings).map(
+                                ([id, field]) => {
+                                    switch (field.type) {
+                                        case "string":
+                                            return (
+                                                <TextInput
+                                                    withAsterisk={
+                                                        field.required
+                                                    }
+                                                    placeholder={
+                                                        field.placeholder
+                                                    }
+                                                    label={field.name}
+                                                    key={id}
+                                                    leftSection={
+                                                        field.icon && (
+                                                            <NamedIcon
+                                                                icon={
+                                                                    field.icon
+                                                                }
+                                                                fallback={
+                                                                    <IconPuzzle
+                                                                        size={
+                                                                            20
+                                                                        }
+                                                                    />
+                                                                }
+                                                                size={20}
+                                                            />
+                                                        )
+                                                    }
+                                                    {...settingsForm.getInputProps(
+                                                        id
+                                                    )}
+                                                />
+                                            );
+                                        case "number":
+                                            return (
+                                                <NumberInput
+                                                    withAsterisk={
+                                                        field.required
+                                                    }
+                                                    placeholder={
+                                                        field.placeholder
+                                                    }
+                                                    label={field.name}
+                                                    key={id}
+                                                    {...settingsForm.getInputProps(
+                                                        id
+                                                    )}
+                                                    min={field.min ?? undefined}
+                                                    max={field.max ?? undefined}
+                                                    leftSection={
+                                                        field.icon && (
+                                                            <NamedIcon
+                                                                icon={
+                                                                    field.icon
+                                                                }
+                                                                fallback={
+                                                                    <IconPuzzle
+                                                                        size={
+                                                                            20
+                                                                        }
+                                                                    />
+                                                                }
+                                                                size={20}
+                                                            />
+                                                        )
+                                                    }
+                                                />
+                                            );
+                                        case "switch":
+                                            return (
+                                                <Switch
+                                                    label={field.name}
+                                                    key={id}
+                                                    thumbIcon={
+                                                        field.icon && (
+                                                            <NamedIcon
+                                                                icon={
+                                                                    field.icon
+                                                                }
+                                                                fallback={
+                                                                    <IconPuzzle
+                                                                        size={
+                                                                            20
+                                                                        }
+                                                                    />
+                                                                }
+                                                                size={20}
+                                                            />
+                                                        )
+                                                    }
+                                                    {...settingsForm.getInputProps(
+                                                        id
+                                                    )}
+                                                />
+                                            );
+                                    }
+                                }
+                            )}
+                        </SimpleGrid>
+                        <Space h="sm" />
+                        <Group justify="right">
+                            <Button
+                                leftSection={<IconDeviceFloppy />}
+                                type="submit"
+                            >
+                                {t(
+                                    "views.settings.tabs.plugins.item.settings.apply"
+                                )}
+                            </Button>
+                        </Group>
+                    </form>
                 </Fieldset>
             </Stack>
         </Paper>

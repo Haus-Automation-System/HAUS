@@ -34,7 +34,11 @@
           "tabTitle": "Plugin Management",
           "item": {
             "status": "Status",
-            "statusValid": "Ready"
+            "statusValid": "Ready",
+            "settings": {
+              "title": "Plugin Settings",
+              "apply": "Save Changes"
+            }
           }
         }
       }

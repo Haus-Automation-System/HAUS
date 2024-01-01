@@ -61,4 +61,5 @@ export type Plugin = {
         };
         settings: { [key: string]: PluginField };
     };
+    settings: { [key: string]: number | string | boolean | null };
 };
