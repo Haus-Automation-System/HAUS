@@ -8,7 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { ScopeSelect } from "../components/ScopeSelection/ScopeSelect";
-import { isApiError, useApi } from "../util/api";
+import { isApiError, useApi, useUser } from "../util/api";
 import { useNotifications } from "../util/notifications";
 import { modals } from "@mantine/modals";
 
@@ -32,6 +32,7 @@ export function CreateUserModal() {
     });
     const { t } = useTranslation();
     const api = useApi();
+    const user = useUser();
     const { error, success } = useNotifications();
     return (
         <form
@@ -71,6 +72,7 @@ export function CreateUserModal() {
                     {...form.getInputProps("scopes")}
                     label={t("modals.createUser.fields.scopes.label")}
                     leftSection={<IconShield size={16} />}
+                    user={user ?? undefined}
                 />
                 <Group justify="right">
                     <Button leftSection={<IconUserPlus />} type="submit">

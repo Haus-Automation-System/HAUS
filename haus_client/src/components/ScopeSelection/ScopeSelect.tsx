@@ -1,9 +1,10 @@
 import { useUncontrolled } from "@mantine/hooks";
 import { User } from "../../types/auth";
-import { useApi, useEvent } from "../../util/api";
+import { hasScope, useApi, useEvent } from "../../util/api";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ApplicationScopes, ScopeDefinition } from "../../types/scope";
 import {
+    Group,
     Menu,
     MenuDropdown,
     MenuItem,
@@ -14,29 +15,36 @@ import {
     Stack,
     Text,
 } from "@mantine/core";
+import { IconCaretDown, IconCheck } from "@tabler/icons-react";
 
 function suggest(
     current: ApplicationScopes,
     scope: string,
     path?: string,
     parent?: ScopeDefinition
-): { def: ScopeDefinition; path: string }[] {
+): { def: ScopeDefinition; path: string; type: "child" | "leaf" }[] {
     if (!scope.includes(".")) {
         return parent
             ? [
                   {
                       def: parent,
                       path: path ?? "",
+                      type: "leaf",
                   },
                   ...Object.values(current).map((def) => ({
                       def,
                       path: (path ? path + "." : "") + def.name,
+                      type:
+                          Object.keys(def.children).length > 0
+                              ? "child"
+                              : "leaf",
                   })),
               ]
-            : Object.values(current).map((def) => ({
+            : (Object.values(current).map((def) => ({
                   def,
                   path: (path ? path + "." : "") + def.name,
-              }));
+                  type: Object.keys(def.children).length > 0 ? "child" : "leaf",
+              })) as any);
     }
     const pieces = scope.split(".");
     const head = pieces[0];
@@ -89,27 +97,40 @@ export function ScopeSelect({
 
     const items = useMemo(() => {
         const suggestions = suggest(appScopes, search);
-        return suggestions.map(({ def, path }) => (
-            <MenuItem
-                onClick={() => {
-                    if (!_value.includes(path)) {
-                        handleChange([..._value, path]);
-                        setSearch("");
-                    }
-                }}
-                key={path}
-                disabled={_value.includes(path) || path === "root"}
-            >
-                <Stack gap={0}>
-                    <Text>
-                        {def.friendly_name} ({path})
-                    </Text>
-                    <Text size="sm" c="dimmed">
-                        {def.description}
-                    </Text>
-                </Stack>
-            </MenuItem>
-        ));
+        return suggestions
+            .filter(({ path }) => !(_value.includes(path) || path === "root"))
+            .map(({ def, path, type }) => (
+                <MenuItem
+                    onClick={() => {
+                        if (type === "leaf") {
+                            if (!_value.includes(path)) {
+                                handleChange([..._value, path]);
+                                setSearch("");
+                            }
+                        } else {
+                            setSearch(path + ".");
+                        }
+                    }}
+                    key={path}
+                    disabled={type === "leaf" && user && !hasScope(user, path)}
+                >
+                    <Stack gap={0}>
+                        <Group gap="sm">
+                            {type === "child" ? (
+                                <IconCaretDown />
+                            ) : (
+                                <IconCheck />
+                            )}
+                            <Text>
+                                {def.friendly_name} ({path})
+                            </Text>
+                        </Group>
+                        <Text size="sm" c="dimmed">
+                            {def.description}
+                        </Text>
+                    </Stack>
+                </MenuItem>
+            ));
     }, [search, appScopes]);
 
     const [menuOpen, setMenuOpen] = useState(false);
@@ -121,9 +142,13 @@ export function ScopeSelect({
             onClose={() => setMenuOpen(false)}
             trapFocus={false}
             position="bottom-start"
+            closeOnItemClick={false}
         >
             <Menu.Target>
-                <PillsInput {...props}>
+                <PillsInput
+                    {...props}
+                    onClick={() => !menuOpen && setMenuOpen(true)}
+                >
                     <Pill.Group>
                         {_value.map((v) => (
                             <Pill
