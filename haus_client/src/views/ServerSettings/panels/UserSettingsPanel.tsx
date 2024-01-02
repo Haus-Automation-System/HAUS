@@ -6,45 +6,42 @@ import {
     useEvent,
     useMultiScoped,
     useScoped,
+    useUser,
 } from "../../../util/api";
 import { User } from "../../../types/auth";
 import {
+    ActionIcon,
     Avatar,
+    Button,
     Group,
+    Modal,
     Paper,
+    SegmentedControl,
     SimpleGrid,
     Stack,
     Text,
     ThemeIcon,
     Tooltip,
 } from "@mantine/core";
-import { IconUser, IconUserPlus, IconUserShield } from "@tabler/icons-react";
+import {
+    IconCheck,
+    IconShield,
+    IconTrashXFilled,
+    IconUser,
+    IconUserEdit,
+    IconUserPlus,
+    IconUserShield,
+} from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "@mantine/hooks";
 import { useModals } from "../../../modals";
+import { ScopeSelect } from "../../../components/ScopeSelection/ScopeSelect";
 
-function UserCard({
-    user,
-    scopes,
-}: {
-    user: User;
-    scopes: {
-        canManage: boolean;
-        canCreate: boolean;
-        canEdit: boolean;
-        canDelete: boolean;
-    };
-}) {
-    const userEnabled = useMemo(
-        () => hasScope(user, "app.user") || hasScope(user, "app.kiosk"),
-        [user.scopes]
-    );
-
+function InnerUserCard({ user }: { user: User }) {
     const { t } = useTranslation();
     const colorScheme = useColorScheme();
-
     return (
-        <Paper p="md" radius="sm" shadow="sm" className="user-card">
+        <Paper p="md" radius="sm" shadow="sm" className="user-card inner">
             <Stack gap="sm">
                 <Group gap="sm" justify="space-between">
                     <Group gap="sm">
@@ -94,8 +91,184 @@ function UserCard({
     );
 }
 
+function UserCard({
+    user,
+    scopes,
+}: {
+    user: User;
+    scopes: {
+        canManage: boolean;
+        canCreate: boolean;
+        canEdit: boolean;
+        canDelete: boolean;
+    };
+}) {
+    const userEnabled = useMemo(
+        () => hasScope(user, "app.user") || hasScope(user, "app.kiosk"),
+        [user.scopes]
+    );
+
+    const { t } = useTranslation();
+    const colorScheme = useColorScheme();
+    const [editing, setEditing] = useState(false);
+    const [newScopes, setNewScopes] = useState(user.scopes);
+    const currentUser = useUser();
+    const [mode, setMode] = useState(
+        hasScope(user, "app.user") || hasScope(user, "app.kiosk")
+            ? hasScope(user, "app.user")
+                ? "user"
+                : "kiosk"
+            : "disabled"
+    );
+
+    return (
+        <Paper
+            p="md"
+            radius="sm"
+            shadow="sm"
+            className="user-card"
+            onClick={() => {
+                setEditing(true);
+                setNewScopes(user.scopes);
+            }}
+        >
+            <Stack gap="sm">
+                <Group gap="sm" justify="space-between">
+                    <Group gap="sm">
+                        <Avatar size="lg" src={user.user_icon ?? undefined}>
+                            {!user.user_icon && <IconUser />}
+                        </Avatar>
+                        <Stack gap={0}>
+                            <Text size="lg">
+                                {user.display_name ?? user.username}
+                            </Text>
+                            <Text c="dimmed">{user.username}</Text>
+                        </Stack>
+                    </Group>
+                    {user.scopes.includes("root") ? (
+                        <Tooltip
+                            label={t("views.settings.tabs.users.item.isRoot")}
+                            withArrow
+                            color={colorScheme === "dark" ? "dark" : undefined}
+                        >
+                            <ThemeIcon
+                                variant="light"
+                                size="xl"
+                                radius="xl"
+                                color="violet"
+                            >
+                                <IconUserShield
+                                    style={{ width: "70%", height: "70%" }}
+                                />
+                            </ThemeIcon>
+                        </Tooltip>
+                    ) : (
+                        <Tooltip
+                            label={t("views.settings.tabs.users.item.isNormal")}
+                            withArrow
+                            color={colorScheme === "dark" ? "dark" : undefined}
+                        >
+                            <ThemeIcon variant="light" size="xl" radius="xl">
+                                <IconUser
+                                    style={{ width: "70%", height: "70%" }}
+                                />
+                            </ThemeIcon>
+                        </Tooltip>
+                    )}
+                </Group>
+            </Stack>
+            <Modal
+                opened={editing}
+                title={
+                    <Group gap="sm" className="modal-title">
+                        <IconUserEdit />
+                        <Stack gap={0} className="title-text">
+                            <Text size="lg">{t("modals.editUser.title")}</Text>
+                            <Text c="dimmed">{user.username}</Text>
+                        </Stack>
+                    </Group>
+                }
+                onClose={() => setEditing(false)}
+                onClick={(e) => e.stopPropagation()}
+                size="lg"
+            >
+                <Stack gap="sm">
+                    <InnerUserCard user={user} />
+                    <ScopeSelect
+                        value={newScopes}
+                        onChange={setNewScopes}
+                        user={currentUser ?? undefined}
+                        label={t("modals.editUser.scopes.label")}
+                        leftSection={<IconShield size={16} />}
+                        disabled={
+                            !scopes.canManage ||
+                            !scopes.canEdit ||
+                            user.scopes.includes("root")
+                        }
+                        rightSection={
+                            scopes.canManage &&
+                            scopes.canEdit &&
+                            !user.scopes.includes("root") && (
+                                <ActionIcon
+                                    size="xl"
+                                    variant="transparent"
+                                    mr="md"
+                                    disabled={newScopes == user.scopes}
+                                >
+                                    <IconCheck />
+                                </ActionIcon>
+                            )
+                        }
+                    />
+                    <Group gap="sm">
+                        <SegmentedControl
+                            disabled={
+                                !scopes.canManage ||
+                                !scopes.canEdit ||
+                                user.scopes.includes("root")
+                            }
+                            data={[
+                                {
+                                    value: "user",
+                                    label: t("modals.editUser.status.user"),
+                                },
+                                {
+                                    value: "kiosk",
+                                    label: t("modals.editUser.status.kiosk"),
+                                },
+                                {
+                                    value: "disabled",
+                                    label: t("modals.editUser.status.disabled"),
+                                    disabled: currentUser?.id === user.id,
+                                },
+                            ]}
+                            value={mode}
+                            onChange={setMode}
+                            style={{ flexGrow: 8 }}
+                        />
+                        {scopes.canManage &&
+                            scopes.canDelete &&
+                            !user.scopes.includes("root") && (
+                                <Button
+                                    color="red"
+                                    leftSection={<IconTrashXFilled size={20} />}
+                                    style={{ flexGrow: 1 }}
+                                    justify="space-between"
+                                >
+                                    {t("modals.editUser.delete")}
+                                </Button>
+                            )}
+                    </Group>
+                </Stack>
+            </Modal>
+        </Paper>
+    );
+}
+
 export function UsersSettingsPanel() {
-    const canManage = useScoped(["users.manage"], { mode: "withinScope" });
+    const withinManage = useScoped(["users.manage"], { mode: "withinScope" });
+    const hasManage = useScoped(["users.manage"]);
+    const canManage = withinManage || hasManage;
     const { t } = useTranslation();
     const {
         usersManageCreate: canCreate,

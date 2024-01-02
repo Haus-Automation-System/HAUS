@@ -1,111 +1,124 @@
 {
-    "views": {
-        "greeter": {
-            "title": "Log In",
-            "fields": {
-                "username": {
-                    "label": "Username"
-                },
-                "password": {
-                    "label": "Password"
-                }
-            },
-            "submit": "Log In",
-            "feedback": {
-                "success": "Logged In!"
-            }
+  "views": {
+    "greeter": {
+      "title": "Log In",
+      "fields": {
+        "username": {
+          "label": "Username"
         },
-        "layout": {
-            "nav": {
-                "actions": {
-                    "logout": "Log Out"
-                }
-            }
-        },
-        "settings": {
-            "tabs": {
-                "server": {
-                    "tabTitle": "Server Settings"
-                },
-                "users": {
-                    "tabTitle": "User Management",
-                    "item": {
-                        "isRoot": "Root User",
-                        "isNormal": "User"
-                    },
-                    "add": {
-                        "button": "Add User"
-                    }
-                },
-                "plugins": {
-                    "tabTitle": "Plugin Management",
-                    "item": {
-                        "status": "Status",
-                        "statusValid": "Ready",
-                        "settings": {
-                            "title": "Plugin Settings",
-                            "apply": "Save Changes"
-                        }
-                    }
-                }
-            }
+        "password": {
+          "label": "Password"
         }
+      },
+      "submit": "Log In",
+      "feedback": {
+        "success": "Logged In!"
+      }
     },
-    "common": {
-        "errors": {
-            "requiredField": "This field is required."
-        },
-        "notifications": {
-            "success": {
-                "title": "Success!"
-            },
-            "info": {
-                "title": "Info:"
-            },
-            "error": {
-                "title": "Error:"
-            }
-        },
-        "appName": {
-            "short": "HAUS"
+    "layout": {
+      "nav": {
+        "actions": {
+          "logout": "Log Out"
         }
+      }
     },
-    "errors": {
+    "settings": {
+      "tabs": {
         "server": {
-            "unspecified": "An unknown server error occurred.",
-            "auth": {
-                "login": {
-                    "notFound": "Username or password is incorrect."
-                }
-            },
-            "access": {
-                "loginRequired": "Must be logged in to access this page/function."
-            },
-            "users": {
-                "create": {
-                    "usernameExists": "That username is already in use."
-                }
+          "tabTitle": "Server Settings"
+        },
+        "users": {
+          "tabTitle": "User Management",
+          "item": {
+            "isRoot": "Root User",
+            "isNormal": "User"
+          },
+          "add": {
+            "button": "Add User"
+          }
+        },
+        "plugins": {
+          "tabTitle": "Plugin Management",
+          "item": {
+            "status": "Status",
+            "statusValid": "Ready",
+            "settings": {
+              "title": "Plugin Settings",
+              "apply": "Save Changes"
             }
+          }
         }
-    },
-    "modals": {
-        "createUser": {
-            "title": "Add User",
-            "fields": {
-                "username": {
-                    "label": "Username",
-                    "placeholder": "new_user"
-                },
-                "password": {
-                    "placeholder": "a-very-secure-password",
-                    "label": "Password"
-                },
-                "scopes": {
-                    "label": "User Scopes"
-                }
-            },
-            "submit": "Create",
-            "success": "Created User!"
-        }
+      }
     }
+  },
+  "common": {
+    "errors": {
+      "requiredField": "This field is required."
+    },
+    "notifications": {
+      "success": {
+        "title": "Success!"
+      },
+      "info": {
+        "title": "Info:"
+      },
+      "error": {
+        "title": "Error:"
+      }
+    },
+    "appName": {
+      "short": "HAUS"
+    }
+  },
+  "errors": {
+    "server": {
+      "unspecified": "An unknown server error occurred.",
+      "auth": {
+        "login": {
+          "notFound": "Username or password is incorrect."
+        }
+      },
+      "access": {
+        "loginRequired": "Must be logged in to access this page/function."
+      },
+      "users": {
+        "create": {
+          "usernameExists": "That username is already in use."
+        }
+      }
+    }
+  },
+  "modals": {
+    "createUser": {
+      "title": "Add User",
+      "fields": {
+        "username": {
+          "label": "Username",
+          "placeholder": "new_user"
+        },
+        "password": {
+          "placeholder": "a-very-secure-password",
+          "label": "Password"
+        },
+        "scopes": {
+          "label": "User Scopes"
+        }
+      },
+      "submit": "Create",
+      "success": "Created User!"
+    },
+    "editUser": {
+      "title": "User Properties",
+      "scopes": {
+        "label": "User Scopes"
+      },
+      "status": {
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "user": "User",
+        "kiosk": "Kiosk"
+      },
+      "delete": "Delete User"
+    }
+  }
 }
