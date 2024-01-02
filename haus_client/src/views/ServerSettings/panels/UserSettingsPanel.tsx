@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     hasScope,
     isApiError,
@@ -36,6 +36,7 @@ import { useTranslation } from "react-i18next";
 import { useColorScheme } from "@mantine/hooks";
 import { useModals } from "../../../modals";
 import { ScopeSelect } from "../../../components/ScopeSelection/ScopeSelect";
+import { isEqual } from "lodash";
 
 function InnerUserCard({ user }: { user: User }) {
     const { t } = useTranslation();
@@ -103,11 +104,6 @@ function UserCard({
         canDelete: boolean;
     };
 }) {
-    const userEnabled = useMemo(
-        () => hasScope(user, "app.user") || hasScope(user, "app.kiosk"),
-        [user.scopes]
-    );
-
     const { t } = useTranslation();
     const colorScheme = useColorScheme();
     const [editing, setEditing] = useState(false);
@@ -120,6 +116,8 @@ function UserCard({
                 : "kiosk"
             : "disabled"
     );
+
+    const api = useApi();
 
     return (
         <Paper
@@ -203,17 +201,28 @@ function UserCard({
                         disabled={
                             !scopes.canManage ||
                             !scopes.canEdit ||
-                            user.scopes.includes("root")
+                            user.scopes.includes("root") ||
+                            currentUser?.id === user.id
                         }
                         rightSection={
                             scopes.canManage &&
                             scopes.canEdit &&
-                            !user.scopes.includes("root") && (
+                            !user.scopes.includes("root") &&
+                            currentUser?.id !== user.id && (
                                 <ActionIcon
                                     size="xl"
                                     variant="transparent"
                                     mr="md"
-                                    disabled={newScopes == user.scopes}
+                                    disabled={isEqual(newScopes, user.scopes)}
+                                    onClick={() =>
+                                        api.users.admin
+                                            .setScopes(user.id, newScopes)
+                                            .then(
+                                                (result) =>
+                                                    !isApiError(result) &&
+                                                    setNewScopes(result.scopes)
+                                            )
+                                    }
                                 >
                                     <IconCheck />
                                 </ActionIcon>
@@ -243,7 +252,34 @@ function UserCard({
                                 },
                             ]}
                             value={mode}
-                            onChange={setMode}
+                            onChange={(newMode: string) => {
+                                setMode(newMode);
+
+                                let updatedScopes = user.scopes.filter(
+                                    (v) => v !== "app.user" && v !== "app.kiosk"
+                                );
+                                switch (newMode) {
+                                    case "kiosk":
+                                        updatedScopes.push("app.kiosk");
+                                        break;
+                                    case "user":
+                                        updatedScopes.push("app.user");
+                                        break;
+                                    case "disabled":
+                                        updatedScopes = updatedScopes.filter(
+                                            (v) => v !== "app"
+                                        );
+                                        break;
+                                }
+
+                                api.users.admin
+                                    .setScopes(user.id, updatedScopes)
+                                    .then(
+                                        (result) =>
+                                            !isApiError(result) &&
+                                            setNewScopes(result.scopes)
+                                    );
+                            }}
                             style={{ flexGrow: 8 }}
                         />
                         {scopes.canManage &&
@@ -254,6 +290,11 @@ function UserCard({
                                     leftSection={<IconTrashXFilled size={20} />}
                                     style={{ flexGrow: 1 }}
                                     justify="space-between"
+                                    onClick={() =>
+                                        api.users.admin
+                                            .delete(user.id)
+                                            .then(() => setEditing(false))
+                                    }
                                 >
                                     {t("modals.editUser.delete")}
                                 </Button>

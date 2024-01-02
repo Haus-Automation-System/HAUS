@@ -22,7 +22,10 @@ export type ApiResponseError = {
 };
 
 export function isApiError(obj: any): obj is ApiResponseError {
-    return Boolean(obj.isApiError);
+    if (!obj) {
+        return false;
+    }
+    return Boolean(obj?.isApiError);
 }
 
 export function extractResponse<T>(

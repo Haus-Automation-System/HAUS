@@ -106,6 +106,27 @@ export function buildApiMethods(
                     });
                     return extractResponse(result);
                 },
+                setScopes: async (
+                    userId: string,
+                    scopes: string[]
+                ): Promise<User | ApiResponseError> => {
+                    const result = await request<User>(
+                        `/users/${userId}/scopes`,
+                        {
+                            method: "POST",
+                            body: scopes,
+                        }
+                    );
+                    return extractResponse(result);
+                },
+                delete: async (
+                    userId: string
+                ): Promise<null | ApiResponseError> => {
+                    const result = await request<null>(`/users/${userId}`, {
+                        method: "DELETE",
+                    });
+                    return extractResponse(result);
+                },
             },
         },
         plugins: {

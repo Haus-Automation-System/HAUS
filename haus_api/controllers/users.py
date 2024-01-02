@@ -1,4 +1,4 @@
-from litestar import Controller, get, post
+from litestar import Controller, delete, get, post
 from litestar.exceptions import *
 from litestar.di import Provide
 from pydantic import BaseModel
@@ -76,3 +76,41 @@ class UsersController(Controller):
         await new_user.save()
         await context.post_event("users", user_ids=[user.id], data={"method": "add"})
         return new_user.redacted
+
+    @post("/{user_id:str}/scopes", guards=[guard_has_scope("users.manage.edit")])
+    async def edit_scopes(
+        self, data: list[str], user_id: str, user: User, context: GlobalContext
+    ) -> RedactedUser:
+        result = await User.get(user_id)
+        if not result:
+            raise NotFoundException(**build_error("users.notFound"))
+
+        if "root" in result.scopes:
+            raise NotAuthorizedException(**build_error("users.immutable"))
+
+        if not all([user.has_scope(i) for i in data]):
+            raise NotAuthorizedException(**build_error("users.edit.scope.insufficient"))
+
+        result.scopes = data[:]
+        await result.save()
+        await context.post_event(
+            "users", user_ids=[user.id, result.id], data={"method": "edit"}
+        )
+        return result.redacted
+
+    @delete("/{user_id:str}", guards=[guard_has_scope("users.manage.delete")])
+    async def delete_user(
+        self, user_id: str, user: User, context: GlobalContext
+    ) -> None:
+        result = await User.get(user_id)
+        if not result:
+            raise NotFoundException(**build_error("users.notFound"))
+
+        if "root" in result.scopes:
+            raise NotAuthorizedException(**build_error("users.immutable"))
+
+        await result.delete()
+        await context.post_event(
+            "users", user_ids=[user.id, result.id], data={"method": "delete"}
+        )
+        await Session.find(Session.user_id == result.id).delete()
