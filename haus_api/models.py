@@ -1,1 +1,1 @@
-from haus_utils.models import *
+from haus_utils import *

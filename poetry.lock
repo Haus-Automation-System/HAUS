@@ -280,6 +280,21 @@ files = [
 ]
 
 [[package]]
+name = "hass-websocket-client"
+version = "0.1.0"
+description = "HomeAssistant WS wrapper library"
+optional = false
+python-versions = ">=3.12,<4.0"
+files = [
+    {file = "hass_websocket_client-0.1.0-py3-none-any.whl", hash = "sha256:a7c495d9dafc20914553e1e2a4e32296fb119225eb9bba9763a1499893c6915c"},
+    {file = "hass_websocket_client-0.1.0.tar.gz", hash = "sha256:cb25e6d068d005c7e1f06e2111c9037e56df3b1d9758fd6a866f328431a3801c"},
+]
+
+[package.dependencies]
+pydantic = ">=2.5.3,<3.0.0"
+websockets = ">=12.0,<13.0"
+
+[[package]]
 name = "httpcore"
 version = "1.0.2"
 description = "A minimal low-level HTTP client."
@@ -1438,4 +1453,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "f48177cbc99cd134c9fd3d6ce153c6d98bc4162c70eff073b40bd4cc97322885"
+content-hash = "a306ae4b8dda3291f708130eb82462e34cfdc61f32b6699d69b90c99265db736"

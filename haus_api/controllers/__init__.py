@@ -1,2 +1,2 @@
 from .users import UsersController, UnauthenticatedUsersController, UsersSelfController
-from .plugins import PluginsController
+from .plugins import PluginsController, SpecificPluginController

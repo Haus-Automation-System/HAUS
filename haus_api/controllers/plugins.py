@@ -7,7 +7,7 @@ from models import *
 
 class PluginsController(Controller):
     path = "/plugins"
-    guards = [guard_within_scope("app.plugins")]
+    guards = [guard_has_scope("app.plugins")]
     dependencies = {"user": Provide(depends_user)}
 
     @get("/")
@@ -80,3 +80,23 @@ class PluginsController(Controller):
         await plugin.save()
         await context.post_event("plugins", data={"target": name, "method": "active"})
         return plugin
+
+
+async def depends_plugin(pluginId: str, context: GlobalContext) -> Plugin:
+    plug = context.plugins.plugins.get(pluginId)
+    if not plug:
+        raise NotFoundException(**build_error("plugin.notFound"))
+
+    return plug
+
+
+class SpecificPluginController(Controller):
+    path = "/plugins/{pluginId:str}"
+    guards = [guard_has_scope("app.plugins")]
+    dependencies = {"user": Provide(depends_user), "plugin": Provide(depends_plugin)}
+
+    @get("/entities")
+    async def get_entities(
+        self, plugin: Plugin, ids: Optional[list[str]] = None
+    ) -> list[PluginEntity]:
+        return await plugin.get_entities(ids=ids)

@@ -73,6 +73,7 @@ app = Litestar(
         UnauthenticatedUsersController,
         UsersSelfController,
         PluginsController,
+        SpecificPluginController,
     ],
     state=State({"context": None}),
     on_startup=[startup_tasks],
