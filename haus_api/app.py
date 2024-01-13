@@ -65,6 +65,12 @@ def internal_server_error_handler(request: Request, exc: Exception) -> Response:
     )
 
 
+async def handle_shutdown(app: Litestar) -> None:
+    context: GlobalContext = app.state.context
+    for p in context.plugins.plugins.values():
+        await p.close()
+
+
 app = Litestar(
     route_handlers=[
         root,
@@ -93,4 +99,5 @@ app = Litestar(
             ws_handler_send_history=10,
         )
     ],
+    on_shutdown=[handle_shutdown]
 )

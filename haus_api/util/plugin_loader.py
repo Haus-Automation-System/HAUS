@@ -1,3 +1,4 @@
+import json
 import subprocess
 import sys
 from traceback import print_exc
@@ -8,6 +9,7 @@ import os
 from pydantic import BaseModel
 import importlib.util
 from logging import getLogger
+from hashlib import sha256
 
 
 class RedactedMetaPlugin(BaseModel):
@@ -23,6 +25,7 @@ class MetaPlugin(BaseDocument):
     manifest: PluginConfig
     settings: dict[str, Union[str, int, float, bool]] = {}
     folder: str
+    dependency_check: Union[str, None]
 
     class Settings:
         name = "plugins"
@@ -42,6 +45,7 @@ class MetaPlugin(BaseDocument):
             manifest=manifest,
             settings={k: v.default for k, v in manifest.settings.items()},
             folder=folder,
+            dependency_check=None
         )
 
     @property
@@ -83,26 +87,35 @@ class PluginLoader:
             await meta.save()
             return meta, None
 
-        try:
-            pypi_dep_strings = []
+        if meta.dependency_check != sha256(
+                conf.run.model_dump_json().encode()).hexdigest():
+            try:
+                pypi_dep_strings = []
 
-            for dep in conf.run.dependencies.values():
-                if dep.mode == "pypi":
-                    pypi_dep_strings.append(
-                        f"{dep.name}{('[' + ','.join(dep.extras) + ']') if dep.extras else ''}{('==' + dep.version if dep.version else '')}"
-                    )
+                for dep in conf.run.dependencies.values():
+                    if dep.mode == "pypi":
+                        pypi_dep_strings.append(
+                            f"{dep.name}{('[' + ','.join(dep.extras) + ']') if dep.extras else ''}{
+                                ('==' + dep.version if dep.version else '')}"
+                        )
 
-            subprocess.call(
-                [sys.executable, "-m", "pip", "install", *pypi_dep_strings],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-        except:
-            self.logger.exception("Dependency error:")
-            meta.active = False
-            meta.status = "Failed to install plugin dependencies."
-            await meta.save()
-            return meta, None
+                subprocess.call(
+                    [sys.executable, "-m", "pip", "install", *pypi_dep_strings],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+                meta.dependency_check = sha256(
+                    conf.run.model_dump_json().encode()).hexdigest()
+            except:
+                self.logger.exception("Dependency error:")
+                meta.active = False
+                meta.status = "Failed to install plugin dependencies."
+                await meta.save()
+                return meta, None
+
+        else:
+            self.logger.info("Skipping dependency install for " +
+                             meta.manifest.metadata.name + ", deps are up-to-date.")
 
         try:
             spec = importlib.util.spec_from_file_location(
