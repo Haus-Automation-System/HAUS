@@ -117,3 +117,9 @@ class SpecificPluginController(Controller):
         self, plugin: Plugin, ids: Optional[list[str]] = None
     ) -> list[PluginEntity]:
         return await plugin.get_entities(ids=ids)
+
+    @get("/actions")
+    async def get_actions(
+        self, plugin: Plugin, ids: Optional[list[str]] = None
+    ) -> Any:
+        return await plugin.get_actions(ids=ids)
