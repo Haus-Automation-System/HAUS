@@ -22,6 +22,16 @@
             height: 100%;
             .nav-main {
                 flex-grow: 1;
+
+                .nav-card {
+                    cursor: pointer;
+                    background-color: var(--mantine-color-default);
+                    transition: background-color 0.1s;
+
+                    &:hover {
+                        background-color: var(--mantine-color-default-hover);
+                    }
+                }
             }
         }
     }

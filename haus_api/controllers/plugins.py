@@ -19,6 +19,7 @@ class PluginsController(Controller):
             for i in await MetaPlugin.all().to_list()
             if i.id in context.plugins.plugins.keys()
             and user.has_scope(f"app.plugins.{i.id}")
+            and i.active
         ]
 
     @get("/detailed", guards=[guard_has_scope("plugins.view")])
@@ -37,7 +38,7 @@ class PluginsController(Controller):
         if not user.has_scope(f"app.plugins.{name}"):
             raise NotFoundException(**build_error("plugin.notFound"))
         result = await MetaPlugin.get(name)
-        if not result:
+        if not result or not result.active:
             raise NotFoundException(**build_error("plugin.notFound"))
 
         return result.redacted

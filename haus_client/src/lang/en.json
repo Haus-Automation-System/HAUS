@@ -17,9 +17,18 @@
     },
     "layout": {
       "nav": {
-        "actions": {
-          "logout": "Log Out"
-        }
+          "actions": {
+              "logout": "Log Out"
+          },
+          "cards": {
+              "builtin": {
+                  "home": "Home"
+              }
+          },
+          "dividers": {
+              "views": "Views",
+              "plugins": "Active Plugins"
+          }
       }
     },
     "settings": {

@@ -1,6 +1,12 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useApi, useApiContext, useScoped } from "../../util/api";
+import {
+    isApiError,
+    useApi,
+    useApiContext,
+    useEvent,
+    useScoped,
+} from "../../util/api";
 import {
     AppShell,
     Group,
@@ -10,11 +16,74 @@ import {
     ActionIcon,
     Divider,
     Button,
+    Paper,
+    ThemeIcon,
 } from "@mantine/core";
 import { useColorScheme, useDisclosure } from "@mantine/hooks";
 import AppIcon from "../../assets/haus_icon.svg";
 import { useTranslation } from "react-i18next";
-import { IconLogout, IconServerCog, IconUserCog } from "@tabler/icons-react";
+import {
+    IconLink,
+    IconLogout,
+    IconServerCog,
+    IconUserCog,
+} from "@tabler/icons-react";
+import { NamedIcon } from "../../util/NamedIcon";
+import { Plugin, PluginEvent, RedactedPlugin } from "../../types/plugin";
+
+function NavCard({
+    icon,
+    name,
+    type,
+    url,
+    subtitle,
+}: {
+    icon: string;
+    name: string;
+    type: "builtin" | "view" | "plugin";
+    url: string;
+    subtitle?: string;
+}) {
+    const nav = useNavigate();
+    return (
+        <Paper
+            p="xs"
+            radius="sm"
+            onClick={() => nav(url)}
+            shadow="sm"
+            className="nav-card"
+        >
+            <Group gap="sm" align="center">
+                <ThemeIcon
+                    color={
+                        {
+                            builtin: undefined,
+                            view: "violet",
+                            plugin: "yellow",
+                        }[type]
+                    }
+                    variant="light"
+                    radius="xl"
+                    size="lg"
+                >
+                    <NamedIcon
+                        icon={icon}
+                        fallback={<IconLink size={24} />}
+                        size={24}
+                    />
+                </ThemeIcon>
+                <Stack gap={0}>
+                    <Text size="md">{name}</Text>
+                    {subtitle && (
+                        <Text size="sm" c="dimmed">
+                            {subtitle}
+                        </Text>
+                    )}
+                </Stack>
+            </Group>
+        </Paper>
+    );
+}
 
 export function LayoutView() {
     const nav = useNavigate();
@@ -32,6 +101,29 @@ export function LayoutView() {
 
     const adminScoped = useScoped(["users", "plugins", "server"], {
         mode: "withinScope",
+    });
+
+    const pluginScoped = useScoped(["app.plugins"], { mode: "withinScope" });
+    const [plugins, setPlugins] = useState<RedactedPlugin[]>([]);
+
+    const loadPlugins = useCallback(
+        () =>
+            api.plugins.list
+                .basic()
+                .then((result) =>
+                    isApiError(result) ? null : setPlugins(result)
+                ),
+        [api.plugins.list.detailed, setPlugins]
+    );
+
+    useEffect(() => {
+        loadPlugins();
+    }, []);
+
+    useEvent<PluginEvent>("plugins", ({ data }) => {
+        if (data.method === "active" || data.method || "settings") {
+            loadPlugins();
+        }
     });
 
     return (
@@ -53,7 +145,43 @@ export function LayoutView() {
             </AppShell.Header>
             <AppShell.Navbar p="md" className="app-nav">
                 <Stack gap="sm" className="nav-stack">
-                    <Stack gap="sm" className="nav-main"></Stack>
+                    <Stack gap="sm" className="nav-main">
+                        <NavCard
+                            icon="home"
+                            type="builtin"
+                            name={t("views.layout.nav.cards.builtin.home")}
+                            url="/"
+                        />
+                        <Divider label={t("views.layout.nav.dividers.views")} />
+                        <NavCard
+                            icon="layout"
+                            type="view"
+                            name="Placeholder"
+                            url="/"
+                        />
+                        {pluginScoped && plugins.length > 0 && (
+                            <>
+                                <Divider
+                                    label={t(
+                                        "views.layout.nav.dividers.plugins"
+                                    )}
+                                />
+                                {plugins.map((plugin) => (
+                                    <NavCard
+                                        icon={plugin.metadata.icon}
+                                        type="plugin"
+                                        name={plugin.metadata.display_name}
+                                        url="/"
+                                        subtitle={
+                                            plugin.id +
+                                            " v" +
+                                            plugin.metadata.version
+                                        }
+                                    />
+                                ))}
+                            </>
+                        )}
+                    </Stack>
                     <Divider />
                     <Group gap="xs" className="nav-actions">
                         {adminScoped && (
