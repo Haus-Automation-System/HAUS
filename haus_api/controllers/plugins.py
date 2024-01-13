@@ -1,4 +1,4 @@
-from litestar import Controller, get, post
+from litestar import Controller, get, post, Request
 from litestar.exceptions import *
 from litestar.di import Provide
 from util import *
@@ -80,6 +80,23 @@ class PluginsController(Controller):
         await plugin.save()
         await context.post_event("plugins", data={"target": name, "method": "active"})
         return plugin
+
+    @post("/{name:str}/reload", guards=[guard_has_scope("plugins.manage.settings")])
+    async def reload_plugin(self, request: Request, name: str, context: GlobalContext) -> MetaPlugin:
+        plugin = await MetaPlugin.get(name)
+        if not plugin:
+            raise NotFoundException(**build_error("plugin.notFound"))
+
+        await context.plugins.plugins[name].close()
+        meta, plugin = await context.plugins.load_plugin(plugin.manifest, plugin.folder)
+        if meta.status and not plugin:
+            request.logger.error(f"Failed to load plugin {
+                                 meta.id}: {meta.status}")
+            context.plugins.plugins[meta.id] = None
+        else:
+            context.plugins.plugins[meta.id] = plugin
+        await context.post_event("plugins", data={"target": name, "method": "reload"})
+        return await MetaPlugin.get(name)
 
 
 async def depends_plugin(pluginId: str, context: GlobalContext) -> Plugin:

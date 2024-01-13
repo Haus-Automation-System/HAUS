@@ -180,6 +180,12 @@ export function buildApiMethods(
                 });
                 return extractResponse(result);
             },
+            reload: async (id: string): Promise<Plugin | ApiResponseError> => {
+                const result = await request<Plugin>(`/plugins/${id}/reload`, {
+                    method: "POST",
+                });
+                return extractResponse(result);
+            },
         },
     };
 }

@@ -1,4 +1,5 @@
 import {
+    ActionIcon,
     Button,
     Fieldset,
     Group,
@@ -26,6 +27,7 @@ import {
     IconCircleXFilled,
     IconDeviceFloppy,
     IconPuzzle,
+    IconRefresh,
 } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "@mantine/form";
@@ -63,22 +65,39 @@ function PluginCard(props: {
                             </Text>
                         </Stack>
                     </Group>
-                    <Switch
-                        disabled={
-                            !props.canManage ||
-                            !props.canManageActive ||
-                            Boolean(props.plugin.status)
-                        }
-                        checked={active}
-                        onChange={(event) => {
-                            setActive(event.currentTarget.checked);
-                            api.plugins.setActive(
-                                props.plugin.id,
-                                event.currentTarget.checked
-                            );
-                        }}
-                        size="lg"
-                    />
+                    <Group gap="sm">
+                        {props.canManage && props.canManageSettings && (
+                            <ActionIcon
+                                size="lg"
+                                variant="transparent"
+                                onClick={() => {
+                                    setReloading(true);
+                                    api.plugins
+                                        .reload(props.plugin.id)
+                                        .then(() => setReloading(false));
+                                }}
+                                loading={reloading}
+                            >
+                                <IconRefresh />
+                            </ActionIcon>
+                        )}
+                        <Switch
+                            disabled={
+                                !props.canManage ||
+                                !props.canManageActive ||
+                                Boolean(props.plugin.status)
+                            }
+                            checked={active}
+                            onChange={(event) => {
+                                setActive(event.currentTarget.checked);
+                                api.plugins.setActive(
+                                    props.plugin.id,
+                                    event.currentTarget.checked
+                                );
+                            }}
+                            size="lg"
+                        />
+                    </Group>
                 </Group>
                 <Fieldset
                     p="sm"

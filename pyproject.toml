@@ -16,6 +16,9 @@ pydantic = "^2.5.3"
 hass-websocket-client = "^0.1.0"
 
 
+[tool.poetry.group.dev.dependencies]
+hass-websocket-client = "^0.1.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
