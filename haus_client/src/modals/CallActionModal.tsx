@@ -127,7 +127,11 @@ export function CallActionModal({
                 <Button
                     leftSection={<IconCheck />}
                     onClick={() => {
-                        onComplete(form);
+                        onComplete({
+                            action: action.id,
+                            target: target,
+                            fields: form,
+                        });
                         modals.closeAll();
                     }}
                     disabled={!validForm}

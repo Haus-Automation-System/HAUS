@@ -5,6 +5,11 @@ from util import *
 from models import *
 
 
+class PluginActionCall(BaseModel):
+    target: Optional[str] = None
+    fields: dict
+
+
 class PluginsController(Controller):
     path = "/plugins"
     guards = [guard_has_scope("app.plugins")]
@@ -125,8 +130,14 @@ class SpecificPluginController(Controller):
     @get("/actions")
     async def get_actions(
         self, plugin: Plugin, context: GlobalContext, ids: Optional[list[str]] = None
-    ) -> Any:
+    ) -> list[EntityAction]:
         await context.plugins.lock(plugin.config.metadata.name)
         result = await plugin.get_actions(ids=ids)
         context.plugins.unlock(plugin.config.metadata.name)
         return result
+
+    @post("/actions/{actionId:str}")
+    async def call_action(self, plugin: Plugin, context: GlobalContext, actionId: str, data: PluginActionCall) -> None:
+        await context.plugins.lock(plugin.config.metadata.name)
+        await plugin.call_action(actionId, data.target, data.fields)
+        context.plugins.unlock(plugin.config.metadata.name)

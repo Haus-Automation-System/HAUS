@@ -204,6 +204,24 @@ export function buildApiMethods(
                 );
                 return extractResponse(result);
             },
+            callAction: async (
+                plugin: string,
+                action: string,
+                target: Entity | null,
+                fields: { [key: string]: any }
+            ): Promise<null | ApiResponseError> => {
+                const result = await request<null>(
+                    `/plugins/${plugin}/actions/${action}`,
+                    {
+                        method: "POST",
+                        body: {
+                            target: target ? target.id : null,
+                            fields: fields,
+                        },
+                    }
+                );
+                return extractResponse(result);
+            },
         },
     };
 }

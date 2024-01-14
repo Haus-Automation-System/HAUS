@@ -48,7 +48,11 @@ export function useModals() {
             plugin: RedactedPlugin,
             action: EntityAction,
             target: Entity | null,
-            onComplete: (result: any) => void,
+            onComplete: (result: {
+                action: string;
+                target: Entity | null;
+                fields: { [key: string]: any };
+            }) => void,
             entities: Entity[]
         ) => {
             modals.open({

@@ -16,6 +16,7 @@ import { NamedIcon } from "../../util/NamedIcon";
 import { Entity } from "../../types/pluginTypes/entity";
 import { RedactedPlugin } from "../../types/plugin";
 import { useModals } from "../../modals";
+import { useApi } from "../../util/api";
 
 export function ActionSelector({
     actions,
@@ -48,6 +49,7 @@ export function ActionSelector({
     );
     const { callAction } = useModals();
     const [open, setOpen] = useState(false);
+    const api = useApi();
     return (
         <Popover position="bottom-end" opened={open} onChange={setOpen}>
             <Popover.Target>
@@ -79,7 +81,13 @@ export function ActionSelector({
                                     plugin,
                                     action,
                                     entity ?? null,
-                                    console.log,
+                                    ({ action, target, fields }) =>
+                                        api.plugins.callAction(
+                                            plugin.id,
+                                            action,
+                                            target,
+                                            fields
+                                        ),
                                     entities
                                 );
                                 setOpen(false);
