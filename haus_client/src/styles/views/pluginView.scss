@@ -13,3 +13,24 @@
         }
     }
 }
+
+.action-dropdown {
+    max-height: 384px;
+    height: fit-content;
+    overflow-y: auto;
+    width: fit-content;
+    max-width: 50vw;
+
+    .action-item {
+        .details {
+            max-width: calc(100% - 48px);
+        }
+
+        transition: background-color 0.1s;
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--mantine-color-default-hover);
+        }
+    }
+}

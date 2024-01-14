@@ -3,7 +3,6 @@ import { isApiError, useApi, useMultiScoped, useUser } from "../../util/api";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { RedactedPlugin } from "../../types/plugin";
 import {
-    ActionIcon,
     Box,
     Divider,
     Group,
@@ -15,12 +14,13 @@ import {
     ThemeIcon,
 } from "@mantine/core";
 import { NamedIcon } from "../../util/NamedIcon";
-import { IconBolt, IconFilter, IconPuzzle } from "@tabler/icons-react";
+import { IconFilter, IconPuzzle } from "@tabler/icons-react";
 import { Entity } from "../../types/pluginTypes/entity";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { EntityCard } from "./EntityCard";
 import { capitalize, uniq } from "lodash";
 import { EntityAction } from "../../types/pluginTypes/action";
+import { ActionSelector } from "./ActionSelector";
 
 export function PluginViewPage() {
     const { pluginId } = useParams();
@@ -125,9 +125,10 @@ export function PluginViewPage() {
                             maw="50vw"
                             miw="256px"
                         />
-                        <ActionIcon size="lg" radius="xl" variant="subtle">
-                            <IconBolt />
-                        </ActionIcon>
+                        <ActionSelector
+                            actions={actions}
+                            filter={(a) => !a.target_types}
+                        />
                     </Group>
                 </Group>
                 <Divider />
@@ -150,6 +151,7 @@ export function PluginViewPage() {
                                     plugin={plugin}
                                     entity={entity}
                                     key={entity.id}
+                                    actions={actions}
                                 />
                             ))}
                         </Masonry>

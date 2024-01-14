@@ -1,9 +1,7 @@
 import {
-    ActionIcon,
     Badge,
     Group,
     Paper,
-    ScrollArea,
     ScrollAreaAutosize,
     Stack,
     Text,
@@ -13,11 +11,22 @@ import { RedactedPlugin } from "../../types/plugin";
 import { Entity } from "../../types/pluginTypes/entity";
 import { memo } from "react";
 import { NamedIcon } from "../../util/NamedIcon";
-import { IconBolt, IconHexagon, IconSettings2 } from "@tabler/icons-react";
+import { IconHexagon, IconSettings2 } from "@tabler/icons-react";
 import { PropertyRenderer } from "../../components/PluginData/PropertyRenderer";
+import { ActionSelector } from "./ActionSelector";
+import { EntityAction } from "../../types/pluginTypes/action";
+import { some } from "lodash";
 
 export const EntityCard = memo(
-    ({ entity, plugin }: { entity: Entity; plugin: RedactedPlugin }) => {
+    ({
+        entity,
+        plugin,
+        actions,
+    }: {
+        entity: Entity;
+        plugin: RedactedPlugin;
+        actions: EntityAction[];
+    }) => {
         return (
             <Paper className="entity-card" shadow="sm" radius="sm" p="sm">
                 <Stack className="main-stack" gap="sm">
@@ -38,9 +47,14 @@ export const EntityCard = memo(
                                 <Badge variant="light">{entity.type}</Badge>
                             </Stack>
                         </Group>
-                        <ActionIcon radius="xl" variant="subtle" size="lg">
-                            <IconBolt />
-                        </ActionIcon>
+                        <ActionSelector
+                            actions={actions}
+                            filter={(a) =>
+                                some(a.target_types ?? [], (v) =>
+                                    entity.id.startsWith(v)
+                                )
+                            }
+                        />
                     </Group>
                     {Object.entries(entity.properties).map(
                         ([key, property]) => (

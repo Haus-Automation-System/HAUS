@@ -78,6 +78,7 @@ export type ActionFieldType =
 export type EntityAction = {
     id: string;
     plugin: string;
+    category: string;
     display: DisplayData;
     target_types?: string[];
     fields: { [key: string]: ActionFieldType };
