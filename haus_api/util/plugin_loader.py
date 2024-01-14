@@ -10,6 +10,7 @@ from pydantic import BaseModel
 import importlib.util
 from logging import getLogger
 from hashlib import sha256
+from asyncio import Lock
 
 
 class RedactedMetaPlugin(BaseModel):
@@ -63,10 +64,25 @@ class PluginLoader:
         self.config = config
         self.plugins: dict[str, Plugin] = {}
         self.logger = getLogger("uvicorn.error")
+        self.locks: dict[str, Lock] = {}
+
+    async def lock(self, plugin: str) -> None:
+        if not plugin in self.locks.keys():
+            self.locks[plugin] = Lock()
+
+        await self.locks[plugin].acquire()
+
+    def unlock(self, plugin: str) -> None:
+        if not plugin in self.locks.keys():
+            self.locks[plugin] = Lock()
+
+        if self.locks[plugin].locked():
+            self.locks[plugin].release()
 
     async def load_plugin(
         self, conf: PluginConfig, folder: str
     ) -> tuple[MetaPlugin, Union[Plugin, None]]:
+        await self.lock(conf.metadata.name)
         meta = await MetaPlugin.get(conf.metadata.name)
         if not meta:
             meta = MetaPlugin.create(True, conf, folder)
@@ -85,6 +101,7 @@ class PluginLoader:
             meta.active = False
             meta.status = f"Required field(s) are empty: {', '.join(invalid)}"
             await meta.save()
+            self.unlock(conf.metadata.name)
             return meta, None
 
         if meta.dependency_check != sha256(
@@ -111,6 +128,7 @@ class PluginLoader:
                 meta.active = False
                 meta.status = "Failed to install plugin dependencies."
                 await meta.save()
+                self.unlock(conf.metadata.name)
                 return meta, None
 
         else:
@@ -133,6 +151,7 @@ class PluginLoader:
             meta.active = False
             meta.status = "Failed to import plugin entrypoint."
             await meta.save()
+            self.unlock(conf.metadata.name)
             return meta, None
 
         try:
@@ -143,12 +162,14 @@ class PluginLoader:
             self.logger.info(
                 f"Initialized plugin {meta.id} ({meta.manifest.metadata.display_name})"
             )
+            self.unlock(conf.metadata.name)
             return meta, plug
         except:
             self.logger.exception("Initialization error:")
             meta.active = False
             meta.status = "Failed to initialize plugin."
             await meta.save()
+            self.unlock(conf.metadata.name)
             return meta, None
 
     async def load_all(self):
@@ -159,6 +180,7 @@ class PluginLoader:
             return
         for plug in self.plugins.values():
             await plug.close()
+            self.unlock(plug.config.metadata.name)
         self.plugins = {}
 
         for f in os.listdir(self.config.plugins.folder):

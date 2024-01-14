@@ -1,8 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { isApiError, useApi, useMultiScoped, useUser } from "../../util/api";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { RedactedPlugin } from "../../types/plugin";
 import {
+    ActionIcon,
     Box,
     Divider,
     Group,
@@ -14,11 +15,12 @@ import {
     ThemeIcon,
 } from "@mantine/core";
 import { NamedIcon } from "../../util/NamedIcon";
-import { IconFilter, IconPuzzle } from "@tabler/icons-react";
+import { IconBolt, IconFilter, IconPuzzle } from "@tabler/icons-react";
 import { Entity } from "../../types/pluginTypes/entity";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { EntityCard } from "./EntityCard";
 import { capitalize, uniq } from "lodash";
+import { EntityAction } from "../../types/pluginTypes/action";
 
 export function PluginViewPage() {
     const { pluginId } = useParams();
@@ -55,15 +57,25 @@ export function PluginViewPage() {
     }, [pluginId]);
 
     const [entities, setEntities] = useState<Entity[]>([]);
+    const [actions, setActions] = useState<EntityAction[]>([]);
+
+    const loadData = useCallback(async () => {
+        if (plugin && plugin.active) {
+            const pluginEntities = await api.plugins.getEntities(plugin.id);
+            const pluginActions = await api.plugins.getActions(plugin.id);
+
+            if (isApiError(pluginActions) || isApiError(pluginEntities)) {
+                setEntities([]);
+                setActions([]);
+            } else {
+                setEntities(pluginEntities);
+                setActions(pluginActions);
+            }
+        }
+    }, [plugin?.active, api]);
 
     useEffect(() => {
-        if (plugin && plugin.active) {
-            api.plugins
-                .getEntities(plugin.id)
-                .then((result) =>
-                    setEntities(isApiError(result) ? [] : result)
-                );
-        }
+        loadData();
     }, [plugin?.id]);
 
     const [filter, setFilter] = useState<string[]>([]);
@@ -75,6 +87,11 @@ export function PluginViewPage() {
             })),
         [entities]
     );
+
+    useEffect(() => {
+        if (plugin && plugin.active) {
+        }
+    }, [plugin?.id]);
 
     return plugin ? (
         <Box className="plugin-view-main loaded">
@@ -104,6 +121,9 @@ export function PluginViewPage() {
                             maw="50vw"
                             miw="256px"
                         />
+                        <ActionIcon size="lg" radius="xl" variant="subtle">
+                            <IconBolt />
+                        </ActionIcon>
                     </Group>
                 </Group>
                 <Divider />

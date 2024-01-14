@@ -115,12 +115,18 @@ class SpecificPluginController(Controller):
 
     @get("/entities")
     async def get_entities(
-        self, plugin: Plugin, ids: Optional[list[str]] = None
+        self, plugin: Plugin, context: GlobalContext, ids: Optional[list[str]] = None
     ) -> list[PluginEntity]:
-        return await plugin.get_entities(ids=ids)
+        await context.plugins.lock(plugin.config.metadata.name)
+        result = await plugin.get_entities(ids=ids)
+        context.plugins.unlock(plugin.config.metadata.name)
+        return result
 
     @get("/actions")
     async def get_actions(
-        self, plugin: Plugin, ids: Optional[list[str]] = None
+        self, plugin: Plugin, context: GlobalContext, ids: Optional[list[str]] = None
     ) -> Any:
-        return await plugin.get_actions(ids=ids)
+        await context.plugins.lock(plugin.config.metadata.name)
+        result = await plugin.get_actions(ids=ids)
+        context.plugins.unlock(plugin.config.metadata.name)
+        return result
