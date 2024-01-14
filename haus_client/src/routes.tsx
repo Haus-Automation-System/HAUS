@@ -4,6 +4,7 @@ import { Greeter } from "./views/Greeter/Greeter";
 import { ServerSettings } from "./views/ServerSettings/ServerSettingsLayout";
 import { PluginSettingsPanel } from "./views/ServerSettings/panels/PluginSettingsPanel";
 import { UsersSettingsPanel } from "./views/ServerSettings/panels/UserSettingsPanel";
+import { PluginViewPage } from "./views/PluginView/PluginViewPage";
 
 export const AppRouter = createBrowserRouter([
     {
@@ -27,6 +28,10 @@ export const AppRouter = createBrowserRouter([
                         element: <PluginSettingsPanel />,
                     },
                 ],
+            },
+            {
+                path: "/plugin/:pluginId",
+                element: <PluginViewPage />,
             },
         ],
     },

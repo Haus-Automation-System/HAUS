@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import {
     isApiError,
     useApi,
@@ -37,12 +37,14 @@ function NavCard({
     type,
     url,
     subtitle,
+    active,
 }: {
     icon: string;
     name: string;
     type: "builtin" | "view" | "plugin";
     url: string;
     subtitle?: string;
+    active?: boolean;
 }) {
     const nav = useNavigate();
     return (
@@ -52,6 +54,7 @@ function NavCard({
             onClick={() => nav(url)}
             shadow="sm"
             className="nav-card"
+            withBorder={active}
         >
             <Group gap="sm" align="center">
                 <ThemeIcon
@@ -126,6 +129,8 @@ export function LayoutView() {
         }
     });
 
+    const { pluginId } = useParams();
+
     return (
         <AppShell
             header={{ height: 60 }}
@@ -171,12 +176,14 @@ export function LayoutView() {
                                         icon={plugin.metadata.icon}
                                         type="plugin"
                                         name={plugin.metadata.display_name}
-                                        url="/"
+                                        url={`/plugin/${plugin.id}`}
                                         subtitle={
                                             plugin.id +
                                             " v" +
                                             plugin.metadata.version
                                         }
+                                        active={plugin.id === pluginId}
+                                        key={plugin.id}
                                     />
                                 ))}
                             </>

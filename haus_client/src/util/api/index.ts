@@ -110,7 +110,11 @@ export function useScoped(
 }
 
 export function useMultiScoped(
-    scopes: { scope: string; mode?: "hasScope" | "withinScope" }[]
+    scopes: {
+        scope: string;
+        mode?: "hasScope" | "withinScope";
+        alias?: string;
+    }[]
 ): { [key: string]: boolean } {
     const api = useApiContext();
 
@@ -119,25 +123,29 @@ export function useMultiScoped(
             scopes,
             (prev, current) => {
                 if (!api.user) {
-                    return { ...prev, [camelCase(current.scope)]: false };
+                    return {
+                        ...prev,
+                        [current.alias ?? camelCase(current.scope)]: false,
+                    };
                 }
 
                 if (api.user.scopes.includes("root")) {
-                    return { ...prev, [camelCase(current.scope)]: true };
+                    return {
+                        ...prev,
+                        [current.alias ?? camelCase(current.scope)]: true,
+                    };
                 }
 
                 if (current.mode === "withinScope") {
                     return {
                         ...prev,
-                        [camelCase(current.scope)]: withinScope(
-                            api.user,
-                            current.scope
-                        ),
+                        [current.alias ?? camelCase(current.scope)]:
+                            withinScope(api.user, current.scope),
                     };
                 } else {
                     return {
                         ...prev,
-                        [camelCase(current.scope)]: hasScope(
+                        [current.alias ?? camelCase(current.scope)]: hasScope(
                             api.user,
                             current.scope
                         ),
