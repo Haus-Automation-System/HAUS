@@ -93,6 +93,10 @@ export function PluginViewPage() {
         }
     }, [plugin?.id]);
 
+    const displayedEntities = entities.filter(
+        (v) => filter.length === 0 || filter.includes(v.type)
+    );
+
     return plugin ? (
         <Box className="plugin-view-main loaded">
             <Stack gap={0} className="stack-main">
@@ -129,22 +133,25 @@ export function PluginViewPage() {
                 <Divider />
                 <ScrollArea p="sm" className="plugin-container">
                     <ResponsiveMasonry
-                        columnsCountBreakPoints={{ 576: 1, 992: 2, 1200: 3 }}
+                        columnsCountBreakPoints={{
+                            576: 1,
+                            992: displayedEntities.length > 1 ? 2 : 1,
+                            1200:
+                                displayedEntities.length > 1
+                                    ? displayedEntities.length > 2
+                                        ? 3
+                                        : 2
+                                    : 1,
+                        }}
                     >
                         <Masonry gutter="8px">
-                            {entities
-                                .filter(
-                                    (v) =>
-                                        filter.length === 0 ||
-                                        filter.includes(v.type)
-                                )
-                                .map((entity) => (
-                                    <EntityCard
-                                        plugin={plugin}
-                                        entity={entity}
-                                        key={entity.id}
-                                    />
-                                ))}
+                            {displayedEntities.map((entity) => (
+                                <EntityCard
+                                    plugin={plugin}
+                                    entity={entity}
+                                    key={entity.id}
+                                />
+                            ))}
                         </Masonry>
                     </ResponsiveMasonry>
                 </ScrollArea>
