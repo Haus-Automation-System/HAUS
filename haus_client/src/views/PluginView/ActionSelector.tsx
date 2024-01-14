@@ -13,13 +13,22 @@ import { startCase } from "lodash";
 import { useMemo, useState } from "react";
 import { EntityAction } from "../../types/pluginTypes/action";
 import { NamedIcon } from "../../util/NamedIcon";
+import { Entity } from "../../types/pluginTypes/entity";
+import { RedactedPlugin } from "../../types/plugin";
+import { useModals } from "../../modals";
 
 export function ActionSelector({
     actions,
     filter,
+    entity,
+    plugin,
+    entities,
 }: {
     actions: EntityAction[];
     filter: (action: EntityAction) => boolean;
+    entity?: Entity;
+    plugin: RedactedPlugin;
+    entities: Entity[];
 }) {
     const [search, setSearch] = useState("");
     const filteredActions = useMemo(
@@ -37,10 +46,13 @@ export function ActionSelector({
                 ),
         [search, actions]
     );
+    const { callAction } = useModals();
+    const [open, setOpen] = useState(false);
     return (
-        <Popover position="bottom-end">
+        <Popover position="bottom-end" opened={open} onChange={setOpen}>
             <Popover.Target>
                 <ActionIcon
+                    onClick={() => setOpen(true)}
                     size="lg"
                     radius="xl"
                     variant="subtle"
@@ -62,6 +74,16 @@ export function ActionSelector({
                             key={action.id}
                             p="xs"
                             shadow="sm"
+                            onClick={() => {
+                                callAction(
+                                    plugin,
+                                    action,
+                                    entity ?? null,
+                                    console.log,
+                                    entities
+                                );
+                                setOpen(false);
+                            }}
                         >
                             <Group gap="sm" wrap="nowrap">
                                 <NamedIcon

@@ -22,10 +22,12 @@ export const EntityCard = memo(
         entity,
         plugin,
         actions,
+        entities,
     }: {
         entity: Entity;
         plugin: RedactedPlugin;
         actions: EntityAction[];
+        entities: Entity[];
     }) => {
         return (
             <Paper className="entity-card" shadow="sm" radius="sm" p="sm">
@@ -54,6 +56,9 @@ export const EntityCard = memo(
                                     entity.id.startsWith(v)
                                 )
                             }
+                            entity={entity}
+                            plugin={plugin}
+                            entities={entities}
                         />
                     </Group>
                     {Object.entries(entity.properties).map(

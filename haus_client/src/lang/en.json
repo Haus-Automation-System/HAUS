@@ -82,7 +82,12 @@
       "boolean": {
         "true": "True",
         "false": "False"
-      }
+      },
+      "empty": "No Value Selected"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "submit": "Submit"
     }
   },
   "errors": {
@@ -134,6 +139,17 @@
         "kiosk": "Kiosk"
       },
       "delete": "Delete User"
+    },
+    "callAction": {
+      "title": "Call Action",
+      "info": {
+        "action": {
+          "legend": "Action Summary"
+        },
+        "target": {
+          "legend": "Target Summary"
+        }
+      }
     }
   },
   "components": {

@@ -128,6 +128,8 @@ export function PluginViewPage() {
                         <ActionSelector
                             actions={actions}
                             filter={(a) => !a.target_types}
+                            plugin={plugin}
+                            entities={entities}
                         />
                     </Group>
                 </Group>
@@ -152,6 +154,7 @@ export function PluginViewPage() {
                                     entity={entity}
                                     key={entity.id}
                                     actions={actions}
+                                    entities={entities}
                                 />
                             ))}
                         </Masonry>

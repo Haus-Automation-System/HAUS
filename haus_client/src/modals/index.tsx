@@ -1,9 +1,13 @@
 import { Group, Stack, Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { IconUserPlus } from "@tabler/icons-react";
+import { IconBolt, IconUserPlus } from "@tabler/icons-react";
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { CreateUserModal } from "./CreateUserModal";
+import { EntityAction } from "../types/pluginTypes/action";
+import { Entity } from "../types/pluginTypes/entity";
+import { CallActionModal } from "./CallActionModal";
+import { RedactedPlugin } from "../types/plugin";
 
 function ModalTitle({
     title,
@@ -40,5 +44,32 @@ export function useModals() {
                 size: "lg",
                 closeOnEscape: false,
             }),
+        callAction: (
+            plugin: RedactedPlugin,
+            action: EntityAction,
+            target: Entity | null,
+            onComplete: (result: any) => void,
+            entities: Entity[]
+        ) => {
+            modals.open({
+                title: (
+                    <ModalTitle
+                        title={t("modals.callAction.title")}
+                        icon={<IconBolt />}
+                    />
+                ),
+                children: (
+                    <CallActionModal
+                        plugin={plugin}
+                        action={action}
+                        target={target}
+                        onComplete={onComplete}
+                        entities={entities}
+                    />
+                ),
+                size: "lg",
+                closeOnEscape: false,
+            });
+        },
     };
 }

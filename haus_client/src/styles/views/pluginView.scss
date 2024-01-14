@@ -34,3 +34,23 @@
         }
     }
 }
+
+.call-action-modal {
+    .info {
+        background-color: var(--mantine-color-default);
+    }
+}
+
+.entity-selector-dropdown {
+    max-height: 256px;
+    overflow-y: auto;
+
+    .entity-item {
+        transition: background-color 0.1s;
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--mantine-color-default-hover);
+        }
+    }
+}
