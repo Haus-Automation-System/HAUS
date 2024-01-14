@@ -1,5 +1,7 @@
 import { AuthenticationContext, Session, User } from "../../types/auth";
 import { Plugin, RedactedPlugin } from "../../types/plugin";
+import { EntityAction } from "../../types/pluginTypes/action";
+import { Entity } from "../../types/pluginTypes/entity";
 import { ApplicationScopes } from "../../types/scope";
 import {
     ApiRequestFunction,
@@ -184,6 +186,22 @@ export function buildApiMethods(
                 const result = await request<Plugin>(`/plugins/${id}/reload`, {
                     method: "POST",
                 });
+                return extractResponse(result);
+            },
+            getEntities: async (
+                plugin: string
+            ): Promise<Entity[] | ApiResponseError> => {
+                const result = await request<Entity[]>(
+                    `/plugins/${plugin}/entities`
+                );
+                return extractResponse(result);
+            },
+            getActions: async (
+                plugin: string
+            ): Promise<EntityAction[] | ApiResponseError> => {
+                const result = await request<EntityAction[]>(
+                    `/plugins/${plugin}/actions`
+                );
                 return extractResponse(result);
             },
         },

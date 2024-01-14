@@ -1,3 +1,15 @@
 .plugin-view-main {
     height: 100%;
+
+    .stack-main {
+        height: 100%;
+    }
+
+    .plugin-container {
+        height: 100%;
+        display: inline-block;
+        .entity-card {
+            background-color: var(--mantine-color-default);
+        }
+    }
 }

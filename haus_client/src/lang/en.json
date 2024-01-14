@@ -17,18 +17,18 @@
     },
     "layout": {
       "nav": {
-          "actions": {
-              "logout": "Log Out"
-          },
-          "cards": {
-              "builtin": {
-                  "home": "Home"
-              }
-          },
-          "dividers": {
-              "views": "Views",
-              "plugins": "Active Plugins"
+        "actions": {
+          "logout": "Log Out"
+        },
+        "cards": {
+          "builtin": {
+            "home": "Home"
           }
+        },
+        "dividers": {
+          "views": "Views",
+          "plugins": "Active Plugins"
+        }
       }
     },
     "settings": {
@@ -77,6 +77,12 @@
     },
     "appName": {
       "short": "HAUS"
+    },
+    "values": {
+      "boolean": {
+        "true": "True",
+        "false": "False"
+      }
     }
   },
   "errors": {
@@ -128,6 +134,17 @@
         "kiosk": "Kiosk"
       },
       "delete": "Delete User"
+    }
+  },
+  "components": {
+    "pluginData": {
+      "entity": {
+        "property": {
+          "list": {
+            "noResults": "No Results"
+          }
+        }
+      }
     }
   }
 }
