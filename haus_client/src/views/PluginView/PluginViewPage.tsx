@@ -2,7 +2,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import { isApiError, useApi, useMultiScoped, useUser } from "../../util/api";
 import { useEffect, useState } from "react";
 import { RedactedPlugin } from "../../types/plugin";
-import { Box, Divider, Group, Loader, Stack, ThemeIcon } from "@mantine/core";
+import {
+    Box,
+    Divider,
+    Group,
+    Loader,
+    Stack,
+    Text,
+    ThemeIcon,
+} from "@mantine/core";
 import { NamedIcon } from "../../util/NamedIcon";
 import { IconPuzzle } from "@tabler/icons-react";
 
@@ -50,6 +58,12 @@ export function PluginViewPage() {
                             fallback={<IconPuzzle />}
                         />
                     </ThemeIcon>
+                    <Stack gap={0}>
+                        <Text>{plugin.metadata.display_name}</Text>
+                        <Text c="dimmed">
+                            {plugin.id} v{plugin.metadata.version}
+                        </Text>
+                    </Stack>
                 </Group>
                 <Divider />
             </Stack>
