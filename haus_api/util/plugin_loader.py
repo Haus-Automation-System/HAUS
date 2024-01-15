@@ -10,7 +10,7 @@ from pydantic import BaseModel
 import importlib.util
 from logging import getLogger
 from hashlib import sha256
-from asyncio import Lock
+from asyncio import Lock, Task, create_task
 
 
 class RedactedMetaPlugin(BaseModel):
@@ -60,11 +60,13 @@ class MetaPlugin(BaseDocument):
 
 
 class PluginLoader:
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: Config, context) -> None:
         self.config = config
         self.plugins: dict[str, Plugin] = {}
         self.logger = getLogger("uvicorn.error")
         self.locks: dict[str, Lock] = {}
+        self.listeners: dict[str, Task] = {}
+        self.context = context
 
     async def lock(self, plugin: str) -> None:
         if not plugin in self.locks.keys():
@@ -163,6 +165,7 @@ class PluginLoader:
                 f"Initialized plugin {meta.id} ({meta.manifest.metadata.display_name})"
             )
             self.unlock(conf.metadata.name)
+            await self.setup_listener(plug)
             return meta, plug
         except:
             self.logger.exception("Initialization error:")
@@ -216,3 +219,16 @@ class PluginLoader:
                 self.plugins[meta.id] = None
             else:
                 self.plugins[meta.id] = plugin
+
+    async def setup_listener(self, plugin: Plugin):
+        if plugin.config.metadata.name in self.listeners.keys():
+            self.listeners[plugin.config.metadata.name].cancel()
+            del self.listeners[plugin.config.metadata.name]
+
+        task = create_task(self.listen_to(plugin))
+        self.listeners[plugin.config.metadata.name] = task
+
+    async def listen_to(self, plugin: Plugin):
+        async for event in plugin.listen_events():
+            if event:
+                await self.context.post_event("plugin.event", user_ids="*", data=event.model_dump())

@@ -10,7 +10,7 @@ class GlobalContext:
     def __init__(self, channels: ChannelsPlugin):
         self.config = Config.from_config("config.yaml")
         self.motor = AsyncIOMotorClient(self.config.server.database.uri)
-        self.plugins = PluginLoader(self.config)
+        self.plugins = PluginLoader(self.config, self)
         self.channels = channels
         self.scopes = APPLICATION_SCOPES.model_copy(deep=True)
 
