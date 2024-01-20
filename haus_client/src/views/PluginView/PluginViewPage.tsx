@@ -21,6 +21,7 @@ import { EntityCard } from "./EntityCard";
 import { capitalize, uniq } from "lodash";
 import { EntityAction } from "../../types/pluginTypes/action";
 import { ActionSelector } from "./ActionSelector";
+import { Responsive } from "react-grid-layout";
 
 export function PluginViewPage() {
     const { pluginId } = useParams();
