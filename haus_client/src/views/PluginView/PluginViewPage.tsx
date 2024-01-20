@@ -74,6 +74,34 @@ export function PluginViewPage() {
         }
     }, [plugin?.active, api]);
 
+    const updateEntity = useCallback(
+        async (entity_id: string): Promise<void> => {
+            if (plugin && plugin.active) {
+                const pluginEntities = await api.plugins.getEntities(plugin.id);
+
+                if (isApiError(pluginEntities)) {
+                    setEntities([]);
+                    setActions([]);
+                } else {
+                    const entityMap: { [key: string]: Entity } =
+                        pluginEntities.reduce(
+                            (prev, current) => ({
+                                ...prev,
+                                [current.id]: current,
+                            }),
+                            {}
+                        );
+                    setEntities((current) =>
+                        current.map((v) =>
+                            v.id === entity_id ? entityMap[entity_id] ?? v : v
+                        )
+                    );
+                }
+            }
+        },
+        [plugin?.active, api]
+    );
+
     useEffect(() => {
         loadData();
     }, [plugin?.id]);
@@ -155,6 +183,7 @@ export function PluginViewPage() {
                                     key={entity.id}
                                     actions={actions}
                                     entities={entities}
+                                    updateHook={() => updateEntity(entity.id)}
                                 />
                             ))}
                         </Masonry>

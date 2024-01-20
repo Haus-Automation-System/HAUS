@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useMemo } from "react";
 import { ApiContext, ApiContextType, ApiEvent } from "./types";
 import { buildApiMethods } from "./methods";
 import { AuthenticationContext, Session, User } from "../../types/auth";
-import { camelCase, reduce } from "lodash";
+import { camelCase, isMatch, reduce } from "lodash";
 
 export { ApiProvider } from "./provider";
 export { isApiError } from "./types";
@@ -157,9 +157,10 @@ export function useMultiScoped(
     }, [api.user?.scopes, scopes]);
 }
 
-export function useEvent<T>(
+export function useEvent<T extends object>(
     event: string,
-    handler: (event: ApiEvent<T>) => void
+    handler: (event: ApiEvent<T>) => void,
+    filter?: object
 ) {
     const { socket } = useApiContext();
 
@@ -169,7 +170,10 @@ export function useEvent<T>(
         (ev: MessageEvent) => {
             try {
                 const evData: ApiEvent<T> = JSON.parse(ev.data);
-                if (evData.code === event) {
+                if (
+                    evData.code === event &&
+                    (!filter || isMatch(evData.data, filter))
+                ) {
                     handler(evData);
                 }
             } catch {}
