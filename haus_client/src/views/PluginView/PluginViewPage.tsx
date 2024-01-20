@@ -75,7 +75,13 @@ export function PluginViewPage() {
     }, [plugin?.active, api]);
 
     const updateEntity = useCallback(
-        async (entity_id: string): Promise<void> => {
+        async (entityId: string, newState?: Entity): Promise<void> => {
+            if (newState) {
+                setEntities((current) =>
+                    current.map((v) => (v.id === entityId ? newState : v))
+                );
+                return;
+            }
             if (plugin && plugin.active) {
                 const pluginEntities = await api.plugins.getEntities(plugin.id);
 
@@ -93,7 +99,7 @@ export function PluginViewPage() {
                         );
                     setEntities((current) =>
                         current.map((v) =>
-                            v.id === entity_id ? entityMap[entity_id] ?? v : v
+                            v.id === entityId ? entityMap[entityId] ?? v : v
                         )
                     );
                 }
@@ -183,7 +189,7 @@ export function PluginViewPage() {
                                     key={entity.id}
                                     actions={actions}
                                     entities={entities}
-                                    updateHook={() => updateEntity(entity.id)}
+                                    updateHook={updateEntity}
                                 />
                             ))}
                         </Masonry>

@@ -17,6 +17,7 @@ import { ActionSelector } from "./ActionSelector";
 import { EntityAction } from "../../types/pluginTypes/action";
 import { some } from "lodash";
 import { useEvent } from "../../util/api";
+import { PluginReportedEvent } from "../../types/pluginTypes/event";
 
 export const EntityCard = memo(
     ({
@@ -30,12 +31,16 @@ export const EntityCard = memo(
         plugin: RedactedPlugin;
         actions: EntityAction[];
         entities: Entity[];
-        updateHook: () => void;
+        updateHook: (id: string, state?: Entity) => void;
     }) => {
-        useEvent("plugin.event", updateHook, {
-            plugin: plugin.id,
-            data: { entity_id: entity.id },
-        });
+        useEvent<PluginReportedEvent>(
+            "plugin.event",
+            (event) => updateHook(entity.id, event.data.new_state),
+            {
+                plugin: plugin.id,
+                targets: [entity.id],
+            }
+        );
         return (
             <Paper className="entity-card" shadow="sm" radius="sm" p="sm">
                 <Stack className="main-stack" gap="sm">
